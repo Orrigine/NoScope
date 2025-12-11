@@ -1,16 +1,35 @@
 using UnityEngine;
 
-public class StatePaused : MonoBehaviour
+namespace NoScope.States
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class StatePaused : IState
     {
-        
-    }
+        public static StatePaused Instance { get; private set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        static StatePaused()
+        {
+            Instance = new StatePaused();
+        }
+
+        private StatePaused() { }
+
+        public void Enter()
+        {
+            Debug.Log("Entering Paused State");
+            Time.timeScale = 0f;
+        }
+
+        public IState? Execute()
+        {
+            // Logique pendant la pause
+            // Attendre que le joueur reprenne
+            return null;
+        }
+
+        public void Exit()
+        {
+            Debug.Log("Exiting Paused State");
+            Time.timeScale = 1f;
+        }
     }
 }
