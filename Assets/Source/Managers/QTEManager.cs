@@ -49,7 +49,7 @@ namespace NoScope
         private QTESequence _currentSequence;
         private List<ArrowDirection> _playerInput = new List<ArrowDirection>();
         private bool _isQTEActive = false;
-        private float _currentTimeLimit;
+        public float CurrentTimeLimit;
         private float _timeRemaining;
         private int _successfulQTECount = 0; // QTE consécutives réussies (reset sur échec)
         private int _totalQTECount = 0; // QTE totales effectuées (jamais reset)
@@ -133,11 +133,11 @@ namespace NoScope
             }
 
             // Ajuste la difficulté - réduit le temps progressivement basé sur le nombre TOTAL de QTE
-            _currentTimeLimit = baseTimeLimit - (_totalQTECount * timeLimitReduction);
-            _currentTimeLimit = Mathf.Max(_currentTimeLimit, minTimeLimit);
-            _timeRemaining = _currentTimeLimit;
+            CurrentTimeLimit = baseTimeLimit - (_totalQTECount * timeLimitReduction);
+            CurrentTimeLimit = Mathf.Max(CurrentTimeLimit, minTimeLimit);
+            _timeRemaining = CurrentTimeLimit;
 
-            Debug.Log($"QTE totales: {_totalQTECount}, Consécutives: {_successfulQTECount}, Time limit = {_currentTimeLimit:F2}s, Sequence length = {length}");
+            Debug.Log($"QTE totales: {_totalQTECount}, Consécutives: {_successfulQTECount}, Time limit = {CurrentTimeLimit:F2}s, Sequence length = {length}");
 
             UpdateUI();
         }
@@ -197,13 +197,13 @@ namespace NoScope
 
         private IEnumerator QTETimer()
         {
-            _timeRemaining = _currentTimeLimit;
+            _timeRemaining = CurrentTimeLimit;
 
             // Initialise le slider
             if (timeSlider != null)
             {
-                timeSlider.maxValue = _currentTimeLimit;
-                timeSlider.value = _currentTimeLimit;
+                timeSlider.maxValue = CurrentTimeLimit;
+                timeSlider.value = CurrentTimeLimit;
             }
 
             // Compte à rebours avec mise à jour de l'UI
@@ -240,7 +240,7 @@ namespace NoScope
                     Image fillImage = timeSlider.fillRect?.GetComponent<Image>();
                     if (fillImage != null)
                     {
-                        float timePercent = _timeRemaining / _currentTimeLimit;
+                        float timePercent = _timeRemaining / CurrentTimeLimit;
 
                         // Lerp entre rouge (0%) et vert (100%)
                         fillImage.color = Color.Lerp(Color.red, Color.green, timePercent);
@@ -345,15 +345,15 @@ namespace NoScope
             // Timer initial
             if (timerText != null)
             {
-                timerText.text = $"<b>Temps:</b> {_currentTimeLimit:F1}s";
+                timerText.text = $"<b>Temps:</b> {CurrentTimeLimit:F1}s";
                 timerText.color = Color.white;
             }
 
             // Slider initial
             if (timeSlider != null)
             {
-                timeSlider.maxValue = _currentTimeLimit;
-                timeSlider.value = _currentTimeLimit;
+                timeSlider.maxValue = CurrentTimeLimit;
+                timeSlider.value = CurrentTimeLimit;
             }
         }
 

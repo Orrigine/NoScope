@@ -48,6 +48,7 @@ namespace NoScope
         private float _nextFireTime;
         private bool _isJumping = false;
         private float _jumpTimer = 0f;
+        private float _jumpDuration = 0f; // Durée du saut en cours
         private Vector3 _velocity;
         private int _consecutiveQTESuccesses = 0;
         private float _lastQTEStartTime = -10f; // Cooldown pour éviter les doubles appels
@@ -58,6 +59,10 @@ namespace NoScope
         {
             if (rb == null)
                 rb = GetComponent<Rigidbody>();
+
+            // Force la gravité et vérifie les contraintes
+            rb.useGravity = true;
+            Debug.Log($"Player Start: useGravity={rb.useGravity}, constraints={rb.constraints}, mass={rb.mass}");
 
             _currentSpeed = baseSpeed;
             _currentBulletsPerSecond = baseBulletsPerSecond;
@@ -79,25 +84,51 @@ namespace NoScope
 
         private void Update()
         {
-            // Ne fait rien si le jeu est en pause OU si une QTE est active
+            // Ne fait rien si le jeu est en pause
             if (GameManager.Instance != null && GameManager.Instance.IsGamePaused())
             {
                 return;
             }
 
-            if (QTEManager.Instance != null && QTEManager.Instance.IsQTEActive())
-            {
-                return;
-            }
-
+            // Le mouvement continue pendant la QTE pour permettre le saut
             Move();
-            Shoot();
-            DecayStats();
+
+            // Ne tire pas et ne decay pas pendant la QTE
+            bool isQTEActive = QTEManager.Instance != null && QTEManager.Instance.IsQTEActive();
+            if (!isQTEActive)
+            {
+                Shoot();
+                DecayStats();
+            }
         }
 
         private void Move()
         {
-            // Mouvement constant vers l'avant
+            // Pendant le saut, la physique gère tout, on ne touche à rien
+            if (_isJumping)
+            {
+                // Utilise unscaledDeltaTime pour que le timer fonctionne même si timeScale change
+                _jumpTimer += Time.unscaledDeltaTime;
+
+                // Debug: Vérifie l'état pendant le saut
+                if (_jumpTimer % 0.5f < Time.unscaledDeltaTime) // Log toutes les 0.5 secondes
+                {
+                    Debug.Log($"Jumping: t={_jumpTimer:F2}/{_jumpDuration:F2}, vel={rb.linearVelocity}, useGravity={rb.useGravity}, pos.y={transform.position.y:F2}");
+                }
+
+                // Vérifie si le saut est terminé (basé sur la durée calculée)
+                if (_jumpTimer >= _jumpDuration)
+                {
+                    _isJumping = false;
+                    _jumpTimer = 0f;
+                    Debug.Log("Jump completed");
+                }
+
+                // Ne fait rien d'autre pendant le saut, la physique gère
+                return;
+            }
+
+            // Mouvement normal hors saut
             _velocity = transform.forward * _currentSpeed;
 
             // Mouvement latéral (Q/A pour gauche, D pour droite)
@@ -122,20 +153,7 @@ namespace NoScope
                 _velocity += transform.right * horizontalInput * lateralSpeed;
             }
 
-            if (_isJumping)
-            {
-                _jumpTimer += Time.deltaTime;
-
-                // Applique la gravité
-                _velocity.y += gravity * Time.deltaTime;
-
-                if (_jumpTimer >= airTime)
-                {
-                    _isJumping = false;
-                    _jumpTimer = 0f;
-                }
-            }
-
+            // Applique la vélocité au rigidbody (seulement hors saut)
             rb.linearVelocity = _velocity;
 
             // Vérifie la position pour la génération de pipes
@@ -151,6 +169,31 @@ namespace NoScope
             {
                 _isJumping = true;
                 _velocity.y = jumpForce;
+            }
+        }
+
+        /// <summary>
+        /// Lance le joueur avec une vélocité calculée pour créer une trajectoire parabolique
+        /// </summary>
+        public void LaunchWithVelocity(Vector3 launchVelocity, float duration)
+        {
+            if (!_isJumping)
+            {
+                _isJumping = true;
+                _jumpTimer = 0f;
+                _jumpDuration = duration;
+
+                // Applique la vélocité calculée directement
+                rb.linearVelocity = launchVelocity;
+
+                // Garde useGravity = true, Unity gère la gravité automatiquement
+                rb.useGravity = true;
+
+                Debug.Log($"Launched with velocity: {launchVelocity}, Duration: {duration}, Gravity: {Physics.gravity.y}");
+            }
+            else
+            {
+                Debug.LogWarning($"LaunchWithVelocity called but player is already jumping! (_isJumping={_isJumping}, timer={_jumpTimer:F2}/{_jumpDuration:F2})");
             }
         }
 
@@ -282,7 +325,7 @@ namespace NoScope
             {
                 Die();
             }
-            else if (other.CompareTag("PipeEnd"))
+            else if (other.CompareTag("TriggerJump"))
             {
 
                 // Cooldown pour éviter les doubles appels (trigger multiple frames)
@@ -334,7 +377,7 @@ namespace NoScope
             _velocity = transform.forward * _currentSpeed;
             _velocity.y = 0f;
 
-            
+
             _isJumping = false;
             _jumpTimer = 0f;
 

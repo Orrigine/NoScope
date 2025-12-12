@@ -78,6 +78,14 @@ namespace NoScope
             {
                 EnemyMass enemy = GameManager.Instance.GetEnemyMass();
                 sb.AppendLine($"<b>Enemy HP:</b> {enemy.GetHealthPercentage() * 100:F1}%");
+
+                // Distance Player-Enemy
+                if (GameManager.Instance.GetPlayer() != null)
+                {
+                    Player player = GameManager.Instance.GetPlayer();
+                    float distance = Vector3.Distance(player.transform.position, enemy.transform.position);
+                    sb.AppendLine($"<b>Distance Player-Enemy:</b> {distance:F2}m");
+                }
                 sb.AppendLine();
             }
 

@@ -91,9 +91,6 @@ namespace NoScope
 
             float distanceToPlayer = Vector3.Distance(transform.position, _playerTransform.position);
 
-            // Debug pour vérifier les valeurs
-            Debug.Log($"Distance to player: {distanceToPlayer}, Max distance: {maxDistanceBeforeCatchUp}, Current speed: {moveSpeed}");
-
             // Si le joueur est trop loin, l'ennemi accélère pour rattraper
             if (distanceToPlayer > maxDistanceBeforeCatchUp)
             {

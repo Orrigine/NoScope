@@ -113,10 +113,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   baseSpeed: 10
   maxSpeed: 30
+  minSpeed: 5
   speedIncreasePerQTE: 2
   speedDecayRate: 0.5
   lateralSpeed: 5
   lateralRange: 3
+  speedLossOnFailedQTE: 3
+  speedRecoveryRate: 1
+  streakBonusMultiplier: 0.5
   jumpForce: 10
   gravity: -20
   airTime: 1
@@ -124,8 +128,9 @@ MonoBehaviour:
   gunPoints:
   - {fileID: 6375376009751398688}
   - {fileID: 6458159550792982911}
-  baseFireRate: 0.5
-  maxFireRate: 0.1
+  baseBulletsPerSecond: 2
+  maxBulletsPerSecond: 10
+  minBulletsPerSecond: 1
   fireRateIncreasePerQTE: 0.05
   fireRateDecayRate: 0.02
   rb: {fileID: 1980247688868167716}
@@ -151,7 +156,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0

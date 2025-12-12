@@ -150,12 +150,10 @@ namespace NoScope
                 }
             }
 
-            // Si le joueur a dépassé plus de pipesBeforeRemoval pipes, on supprime les plus anciennes
+            // Si le joueur a dépassé plus de pipesBeforeRemoval, on supprime les plus anciennes
             int pipesToRemove = pipesPassedCount - pipesBeforeRemoval;
             if (pipesToRemove > 0)
             {
-                Debug.Log($"Player passed {pipesPassedCount} pipes, removing {pipesToRemove} old pipes");
-
                 for (int i = 0; i < pipesToRemove; i++)
                 {
                     // Spawn une nouvelle pipe pour chaque pipe supprimée

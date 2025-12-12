@@ -16,21 +16,21 @@ namespace NoScope.States
         public void Enter()
         {
             Debug.Log("Entering Style State - QTE Time!");
-            // Arrêt complet du temps pour la QTE
-            Time.timeScale = 0f;
+            // IMPORTANT : Garde le temps actif pour permettre la physique du saut
+            Time.timeScale = 1f;
         }
 
         public IState? Execute()
         {
             // Logique pendant la QTE (gérée par QTEManager)
-            // Le temps est arrêté, on attend la fin de la QTE
+            // Le temps continue, permettant au joueur de voler pendant la QTE
             return null;
         }
 
         public void Exit()
         {
             Debug.Log("Exiting Style State - Resuming Game");
-            // Reprise du temps normal
+            // Assure que le temps est bien normal
             Time.timeScale = 1f;
         }
     }

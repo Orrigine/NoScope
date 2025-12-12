@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - PipeEnd
   - Bullet
+  - TriggerJump
+  - TriggerQTE
   layers:
   - Default
   - TransparentFX
