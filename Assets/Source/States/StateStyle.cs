@@ -17,7 +17,7 @@ namespace NoScope.States
         {
             Debug.Log("Entering Style State - QTE Time!");
             // IMPORTANT : Garde le temps actif pour permettre la physique du saut
-            Time.timeScale = 1f;
+            Time.timeScale = 0.5f;
         }
 
         public IState? Execute()

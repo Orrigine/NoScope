@@ -154,11 +154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c3d4e5f6789012345678901234abcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoScope.SmallEnemy
-  maxHealth: 1000
+  maxHealth: 200
   currentHealth: 0
-  moveSpeed: 5
+  moveSpeed: 15
   damageToPlayer: 50
   damageEffectPrefab: {fileID: 0}
   healthBarTransform: {fileID: 0}
-  lifetime: 10
-  attackSpeed: 7
+  lifetime: 30
