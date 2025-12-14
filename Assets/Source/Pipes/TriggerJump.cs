@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 namespace NoScope
 {
@@ -15,19 +16,26 @@ namespace NoScope
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"TriggerJump detected: {other.gameObject.name} with tag '{other.tag}'");
+            Debug.Log($"[TriggerJump] OnTriggerEnter détecté avec {other.gameObject.name} (tag: '{other.tag}')");
 
             if (other.CompareTag("Player"))
             {
+                Debug.Log("[TriggerJump] Tag Player confirmé!");
+
                 Player player = other.GetComponent<Player>();
                 if (player != null && targetLandingPoint != null)
                 {
-                    Debug.Log("Player detected in TriggerJump - Starting launch sequence");
+                    Debug.Log("[TriggerJump] Player component et targetLandingPoint OK - Lancement QTE");
 
                     // Déclenche la QTE D'ABORD pour générer _currentTimeLimit
                     if (QTEManager.Instance != null)
                     {
+                        Debug.Log("[TriggerJump] Appel de QTEManager.StartQTE()");
                         QTEManager.Instance.StartQTE();
+                    }
+                    else
+                    {
+                        Debug.LogError("[TriggerJump] QTEManager.Instance est NULL!");
                     }
 
                     // Détermine la durée du saut APRÈS la génération de la QTE
@@ -39,18 +47,35 @@ namespace NoScope
                         jumpDuration = QTEManager.Instance.CurrentTimeLimit;
                     }
 
-                    // Calcule la vélocité pour atteindre le point cible avec un arc parabolique
-                    Vector3 launchVelocity = CalculateJumpVelocity(
-                        other.transform.position,
-                        targetLandingPoint.position,
-                        jumpDuration,
-                        arcHeight
-                    );
+                    // Calcule les points de la trajectoire parabolique
+                    Vector3 startPos = other.transform.position;
+                    Vector3 endPos = targetLandingPoint.position;
 
-                    // Lance le joueur avec la vélocité calculée
-                    player.LaunchWithVelocity(launchVelocity, jumpDuration);
+                    // Crée une vraie parabole avec plusieurs points intermédiaires
+                    int numPoints = 10; // Nombre de points pour la courbe
+                    Vector3[] path = new Vector3[numPoints];
 
-                    Debug.Log($"Player launched! Velocity: {launchVelocity}, Duration: {jumpDuration}s, TimeScale: {Time.timeScale}");
+                    float distance = Vector3.Distance(new Vector3(startPos.x, 0, startPos.z), new Vector3(endPos.x, 0, endPos.z));
+
+                    for (int i = 0; i < numPoints; i++)
+                    {
+                        float t = i / (float)(numPoints - 1); // 0 à 1
+
+                        // Position horizontale (linéaire)
+                        Vector3 point = Vector3.Lerp(startPos, endPos, t);
+
+                        // Hauteur parabolique : atteint arcHeight au milieu (t=0.5)
+                        // Formule: y = -4 * arcHeight * (t - 0.5)^2 + arcHeight
+                        float parabola = -4f * arcHeight * Mathf.Pow(t - 0.5f, 2f) + arcHeight;
+                        point.y += parabola;
+
+                        path[i] = point;
+                    }
+
+                    // Lance le joueur avec DOTween
+                    player.LaunchWithDOTween(path, jumpDuration);
+
+                    Debug.Log($"Player launched with DOTween! Duration: {jumpDuration}s, Arc: {arcHeight}m, Distance: {distance:F2}m, Points: {numPoints}");
                 }
                 else
                 {
@@ -66,54 +91,27 @@ namespace NoScope
 
 
 
-        private Vector3 CalculateJumpVelocity(Vector3 start, Vector3 target, float duration, float height)
-        {
-            // Calcule la vélocité horizontale (XZ)
-            Vector3 horizontalDirection = new Vector3(target.x - start.x, 0, target.z - start.z);
-            Vector3 horizontalVelocity = horizontalDirection / duration;
-
-            // Calcule la vélocité verticale avec la formule standard de mouvement parabolique
-            // v0 = (h - 0.5*g*t²) / t où h est la hauteur totale (différence + arc)
-            float gravity = Physics.gravity.y; // Négatif
-            float totalHeight = (target.y - start.y) + height; // Hauteur à atteindre
-
-            // Formule: v0y = (2*h) / t - g*t/2
-            float verticalVelocity = (2f * totalHeight) / duration - (gravity * duration) / 2f;
-
-            return new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.z);
-        }
-
         private void OnDrawGizmos()
         {
             if (!drawGizmos || targetLandingPoint == null) return;
 
-            // Durée pour le gizmo
-            float gizmoDuration = manualJumpDuration;
-            if (useQTETimeForDuration && QTEManager.Instance != null && QTEManager.Instance.CurrentTimeLimit > 0)
-            {
-                gizmoDuration = QTEManager.Instance.CurrentTimeLimit;
-            }
-
-            // Dessine la trajectoire prévue
+            // Dessine la trajectoire parabolique prévue (même formule que le saut réel)
             Gizmos.color = Color.green;
-            Vector3 previousPoint = transform.position;
 
-            int segments = 20;
-            for (int i = 1; i <= segments; i++)
+            Vector3 startPos = transform.position;
+            Vector3 endPos = targetLandingPoint.position;
+
+            int numPoints = 20;
+            Vector3 previousPoint = startPos;
+
+            for (int i = 1; i <= numPoints; i++)
             {
-                float t = i / (float)segments;
-                float time = gizmoDuration * t;
+                float t = i / (float)numPoints;
+                Vector3 point = Vector3.Lerp(startPos, endPos, t);
 
-                Vector3 velocity = CalculateJumpVelocity(
-                    transform.position,
-                    targetLandingPoint.position,
-                    gizmoDuration,
-                    arcHeight
-                );
-
-                // Position à ce moment du saut
-                Vector3 point = transform.position + velocity * time;
-                point.y += -0.5f * Mathf.Abs(Physics.gravity.y) * time * time;
+                // Formule parabolique identique au saut
+                float parabola = -4f * arcHeight * Mathf.Pow(t - 0.5f, 2f) + arcHeight;
+                point.y += parabola;
 
                 Gizmos.DrawLine(previousPoint, point);
                 previousPoint = point;
@@ -123,9 +121,13 @@ namespace NoScope
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(targetLandingPoint.position, 0.5f);
 
-            // Dessine le trigger
+            // Dessine le trigger 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>()?.size ?? Vector3.one);
+            MeshCollider meshCol = GetComponent<MeshCollider>();
+            if (meshCol != null && meshCol.sharedMesh != null)
+            {
+                Gizmos.DrawWireMesh(meshCol.sharedMesh, transform.position, transform.rotation, transform.lossyScale);
+            }
         }
     }
 }

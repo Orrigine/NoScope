@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 namespace NoScope
 {
@@ -49,6 +50,7 @@ namespace NoScope
         private bool _isJumping = false;
         private float _jumpTimer = 0f;
         private float _jumpDuration = 0f; // Durée du saut en cours
+        private Tween _activeTween; // Tween DOTween actif
         private Vector3 _velocity;
         private int _consecutiveQTESuccesses = 0;
         private float _lastQTEStartTime = -10f; // Cooldown pour éviter les doubles appels
@@ -76,6 +78,9 @@ namespace NoScope
 
         private void OnDestroy()
         {
+            // Nettoie le tween avant destruction
+            _activeTween?.Kill();
+
             if (QTEManager.Instance != null)
             {
                 QTEManager.Instance.OnQTEComplete -= OnQTEComplete;
@@ -104,27 +109,9 @@ namespace NoScope
 
         private void Move()
         {
-            // Pendant le saut, la physique gère tout, on ne touche à rien
+            // Pendant le saut, DOTween gère tout le mouvement
             if (_isJumping)
             {
-                // Utilise unscaledDeltaTime pour que le timer fonctionne même si timeScale change
-                _jumpTimer += Time.unscaledDeltaTime;
-
-                // Debug: Vérifie l'état pendant le saut
-                if (_jumpTimer % 0.5f < Time.unscaledDeltaTime) // Log toutes les 0.5 secondes
-                {
-                    Debug.Log($"Jumping: t={_jumpTimer:F2}/{_jumpDuration:F2}, vel={rb.linearVelocity}, useGravity={rb.useGravity}, pos.y={transform.position.y:F2}");
-                }
-
-                // Vérifie si le saut est terminé (basé sur la durée calculée)
-                if (_jumpTimer >= _jumpDuration)
-                {
-                    _isJumping = false;
-                    _jumpTimer = 0f;
-                    Debug.Log("Jump completed");
-                }
-
-                // Ne fait rien d'autre pendant le saut, la physique gère
                 return;
             }
 
@@ -156,11 +143,12 @@ namespace NoScope
             // Applique la vélocité au rigidbody (seulement hors saut)
             rb.linearVelocity = _velocity;
 
-            // Vérifie la position pour la génération de pipes
-            if (PipeGenerator.Instance != null)
-            {
-                PipeGenerator.Instance.CheckPlayerPosition(transform.position);
-            }
+            // NOTE: La génération de pipes est maintenant gérée par des triggers sur chaque Ground
+            // Plus besoin de vérifier à chaque frame
+            // if (PipeGenerator.Instance != null)
+            // {
+            //     PipeGenerator.Instance.CheckPlayerPosition(transform.position);
+            // }
         }
 
         public void Jump()
@@ -173,28 +161,36 @@ namespace NoScope
         }
 
         /// <summary>
-        /// Lance le joueur avec une vélocité calculée pour créer une trajectoire parabolique
+        /// Lance le joueur sur une trajectoire parabolique avec DOTween
         /// </summary>
-        public void LaunchWithVelocity(Vector3 launchVelocity, float duration)
+        public void LaunchWithDOTween(Vector3[] path, float duration)
         {
-            if (!_isJumping)
+            if (_isJumping)
             {
-                _isJumping = true;
-                _jumpTimer = 0f;
-                _jumpDuration = duration;
-
-                // Applique la vélocité calculée directement
-                rb.linearVelocity = launchVelocity;
-
-                // Garde useGravity = true, Unity gère la gravité automatiquement
-                rb.useGravity = true;
-
-                Debug.Log($"Launched with velocity: {launchVelocity}, Duration: {duration}, Gravity: {Physics.gravity.y}");
+                Debug.LogWarning("LaunchWithDOTween called but player is already jumping!");
+                return;
             }
-            else
-            {
-                Debug.LogWarning($"LaunchWithVelocity called but player is already jumping! (_isJumping={_isJumping}, timer={_jumpTimer:F2}/{_jumpDuration:F2})");
-            }
+
+            _isJumping = true;
+            _jumpTimer = 0f;
+            _jumpDuration = duration;
+
+            // Tue le tween précédent s'il existe
+            _activeTween?.Kill();
+
+            // Crée le tween avec un path parabolique (Linear pour suivre exactement les points)
+            _activeTween = transform.DOPath(path, duration, PathType.Linear)
+                .SetEase(Ease.Linear) // Linear pour une vitesse constante le long du path
+                .SetUpdate(UpdateType.Normal, true) // useUnscaledTime = true pour ignorer timeScale
+                .OnComplete(() =>
+                {
+                    _isJumping = false;
+                    _jumpTimer = 0f;
+                    _activeTween = null;
+                    Debug.Log("Jump completed via DOTween");
+                });
+
+            Debug.Log($"DOTween jump started: duration={duration:F2}s, path points={path.Length}");
         }
 
         private void Shoot()

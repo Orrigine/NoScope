@@ -41,9 +41,8 @@ namespace NoScope
             if (initialScenePipe != null)
             {
                 _activePipes.AddLast(initialScenePipe);
-                float pipeLength = Vector3.Distance(initialScenePipe.startPoint.position, initialScenePipe.endPoint.position);
                 _nextSpawnPosition = initialScenePipe.endPoint.position + Vector3.forward * pipeSpacing;
-                Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}, length: {pipeLength}");
+                Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}");
 
                 // Génère les pipes suivantes (une de moins car on a déjà la première)
                 for (int i = 0; i < initialPipeCount - 1; i++)
@@ -88,16 +87,10 @@ namespace NoScope
 
             Pipes newPipe = _pipePool.Dequeue();
 
-            // Calcul de la position : aligne le startPoint de la nouvelle pipe avec _nextSpawnPosition
-            // Force la hauteur Y à être identique pour éviter l'escalier
-            Vector3 offset = newPipe.transform.position - newPipe.startPoint.position;
-            Vector3 targetPosition = _nextSpawnPosition + offset;
-
-            // Force la hauteur Y à celle de la première pipe pour alignement parfait
-            if (_activePipes.Count > 0)
-            {
-                targetPosition.y = _activePipes.First.Value.transform.position.y;
-            }
+            // Place la pipe de sorte que son startPoint soit exactement à _nextSpawnPosition
+            // Calcule la différence entre la position du transform et celle du startPoint
+            Vector3 offset = newPipe.startPoint.position - newPipe.transform.position;
+            Vector3 targetPosition = _nextSpawnPosition - offset;
 
             newPipe.transform.position = targetPosition;
             newPipe.Activate();
@@ -110,15 +103,10 @@ namespace NoScope
 
             _activePipes.AddLast(newPipe);
 
-            Debug.Log($"Spawned pipe at {newPipe.transform.position}, active pipes: {_activePipes.Count}, pool remaining: {_pipePool.Count}");
+            Debug.Log($"Spawned pipe at {newPipe.transform.position}, startPoint: {newPipe.startPoint.position}, endPoint: {newPipe.endPoint.position}, next spawn: {_nextSpawnPosition}");
 
-            // Prépare la prochaine position basée sur l'endPoint de la pipe actuelle + espacement
-            // Force également la hauteur Y pour la prochaine position
+            // Prépare la prochaine position = endPoint de cette pipe + espacement
             _nextSpawnPosition = newPipe.endPoint.position + Vector3.forward * pipeSpacing;
-            if (_activePipes.Count > 0)
-            {
-                _nextSpawnPosition.y = _activePipes.First.Value.endPoint.position.y;
-            }
         }
 
         private void RemoveOldestPipe()
@@ -134,7 +122,8 @@ namespace NoScope
 
         public void CheckPlayerPosition(Vector3 playerPosition)
         {
-            if (_activePipes.Count <= pipesBeforeRemoval) return; // Garde au minimum pipesBeforeRemoval pipes
+            // Ne génère pas si on n'a pas assez de pipes actives
+            if (_activePipes.Count == 0) return;
 
             // Compte combien de pipes le joueur a dépassées
             int pipesPassedCount = 0;
@@ -156,11 +145,11 @@ namespace NoScope
             {
                 for (int i = 0; i < pipesToRemove; i++)
                 {
-                    // Spawn une nouvelle pipe pour chaque pipe supprimée
-                    SpawnNextPipe();
-
-                    // Supprime la plus ancienne
+                    // Supprime d'abord la plus ancienne
                     RemoveOldestPipe();
+
+                    // Spawn une nouvelle pipe pour la remplacer
+                    SpawnNextPipe();
                 }
             }
         }
