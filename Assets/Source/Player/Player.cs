@@ -2,15 +2,20 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using System.Runtime.CompilerServices;
 
 namespace NoScope
 {
     public class Player : MonoBehaviour
     {
+
+        [Header("Values")]
+        [SerializeField] public int Life { get; private set; }
+
         [Header("Movement Settings")]
         [SerializeField] private float baseSpeed = 10f;
         [SerializeField] private float maxSpeed = 30f;
-        [SerializeField] private float minSpeed = 5f; // Vitesse minimum absolue
+        [SerializeField] private float minSpeed = 5f;
         [SerializeField] private float speedIncreasePerQTE = 2f;
         [SerializeField] private float speedDecayRate = 0.5f;
         [SerializeField] private float lateralSpeed = 5f;
@@ -384,5 +389,17 @@ namespace NoScope
             }
 
         }
+        public void DecrementHealth()
+        {
+            if (Life > 0)
+            {
+                Life--;
+            }
+            else
+            {
+                Die();
+            }
+        }
     }
 }
+

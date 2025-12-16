@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NoScope.SmallEnemy
   maxHealth: 200
   currentHealth: 0
-  moveSpeed: 15
+  moveSpeed: 17.5
   damageToPlayer: 50
   damageEffectPrefab: {fileID: 0}
   healthBarTransform: {fileID: 0}
