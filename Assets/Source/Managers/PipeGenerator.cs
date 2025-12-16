@@ -109,6 +109,17 @@ namespace NoScope
             _nextSpawnPosition = newPipe.endPoint.position + Vector3.forward * pipeSpacing;
         }
 
+        public void AskRemoveOldestPipe()
+        {
+            if (_activePipes.Count <= pipesBeforeRemoval)
+            {
+                Debug.Log($"Pas assez de pipes pour en supprimer. Actif: {_activePipes.Count}, Minimum requis: {pipesBeforeRemoval + 1}");
+                return;
+            }
+
+            RemoveOldestPipe();
+        }
+
         private void RemoveOldestPipe()
         {
             if (_activePipes.Count == 0) return;
@@ -118,40 +129,6 @@ namespace NoScope
 
             oldestPipe.Deactivate();
             _pipePool.Enqueue(oldestPipe);
-        }
-
-        public void CheckPlayerPosition(Vector3 playerPosition)
-        {
-            // Ne génère pas si on n'a pas assez de pipes actives
-            if (_activePipes.Count == 0) return;
-
-            // Compte combien de pipes le joueur a dépassées
-            int pipesPassedCount = 0;
-            foreach (Pipes pipe in _activePipes)
-            {
-                if (pipe.IsPlayerPast(playerPosition))
-                {
-                    pipesPassedCount++;
-                }
-                else
-                {
-                    break; // Arrête dès qu'on trouve une pipe non dépassée
-                }
-            }
-
-            // Si le joueur a dépassé plus de pipesBeforeRemoval, on supprime les plus anciennes
-            int pipesToRemove = pipesPassedCount - pipesBeforeRemoval;
-            if (pipesToRemove > 0)
-            {
-                for (int i = 0; i < pipesToRemove; i++)
-                {
-                    // Supprime d'abord la plus ancienne
-                    RemoveOldestPipe();
-
-                    // Spawn une nouvelle pipe pour la remplacer
-                    SpawnNextPipe();
-                }
-            }
         }
 
         public Pipes GetCurrentPipe()

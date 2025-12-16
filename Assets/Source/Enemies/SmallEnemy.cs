@@ -11,8 +11,6 @@ namespace NoScope
         {
             base.Start();
 
-            // Auto-destruction après un certain temps
-            Destroy(gameObject, lifetime);
         }
 
         protected override void FollowPlayer()
@@ -28,8 +26,7 @@ namespace NoScope
                 Player player = other.GetComponent<Player>();
                 if (player != null)
                 {
-                    // Le joueur meurt au contact
-                    Die();
+                    player.DecrementHealth();
                 }
             }
         }

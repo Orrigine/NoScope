@@ -213,7 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NoScope.TriggerJump
   targetLandingPoint: {fileID: 7697020619416404718}
   arcHeight: 8
-  useQTETimeForDuration: 1
+  useQTETimeForDuration: 0
   manualJumpDuration: 3
   drawGizmos: 1
 --- !u!1 &7430094950518997125
