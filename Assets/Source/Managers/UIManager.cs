@@ -14,6 +14,8 @@ namespace NoScope
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject victoryPanel;
+        [SerializeField] private GameObject creditsPanel;
+        [SerializeField] private GameObject settingsPanel;
 
         [Header("Gameplay UI")]
         [SerializeField] private TextMeshProUGUI speedText;
@@ -111,6 +113,20 @@ namespace NoScope
                 mainMenuPanel.SetActive(true);
         }
 
+        public void ShowCredits()
+        {
+            HideAllPanels();
+            if (creditsPanel != null)
+                creditsPanel.SetActive(true);
+        }
+
+        public void ShowSettings()
+        {
+            HideAllPanels();
+            if (settingsPanel != null)
+                settingsPanel.SetActive(true);
+        }
+
         private void OnGameStart()
         {
             HideAllPanels();
@@ -149,9 +165,22 @@ namespace NoScope
             if (pausePanel != null) pausePanel.SetActive(false);
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
             if (victoryPanel != null) victoryPanel.SetActive(false);
+            if (creditsPanel != null) creditsPanel.SetActive(false);
+            if (settingsPanel != null) settingsPanel.SetActive(false);
         }
 
         // Méthodes appelées par les boutons UI
+        public void OnCreditsButtonClicked()
+        {
+            HideAllPanels();
+            creditsPanel.SetActive(true);
+        }
+
+        public void OnSettingsButtonClicked()
+        {
+            ShowSettings();
+        }
+
         public void OnStartButtonClicked()
         {
             if (GameManager.Instance != null)
