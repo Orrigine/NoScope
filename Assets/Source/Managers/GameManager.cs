@@ -29,6 +29,7 @@ namespace NoScope
         private EnemyMass _currentEnemyMass;
         private float _gameTime = 0f;
         private int _score = 0;
+        private float _currentScoreMultiplier = 1f;
 
         // Events
         public event Action OnGameStart;
@@ -103,13 +104,11 @@ namespace NoScope
             if (existingPlayer != null)
             {
                 _currentPlayer = existingPlayer;
-                Debug.Log("Using existing Player from scene");
             }
             else if (playerPrefab != null)
             {
                 GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
                 _currentPlayer = playerObj.GetComponent<Player>();
-                Debug.Log("Spawned new Player from prefab");
             }
 
             if (_currentPlayer != null)
@@ -121,14 +120,12 @@ namespace NoScope
             if (existingEnemyMass != null)
             {
                 _currentEnemyMass = existingEnemyMass;
-                Debug.Log("Using existing EnemyMass from scene");
             }
             else if (enemyMassPrefab != null)
             {
                 Vector3 spawnPos = Vector3.back * 30f; // Derrière le joueur
                 GameObject enemyObj = Instantiate(enemyMassPrefab, spawnPos, Quaternion.identity);
                 _currentEnemyMass = enemyObj.GetComponent<EnemyMass>();
-                Debug.Log("Spawned new EnemyMass from prefab");
             }
 
             // Change l'état vers Play
@@ -137,7 +134,6 @@ namespace NoScope
                 StateMachine.Instance.ChangeState(StatePlay.Instance);
             }
             OnGameStart?.Invoke();
-            Debug.Log("Game Started!");
         }
 
         public void PauseGame()
@@ -247,6 +243,27 @@ namespace NoScope
             OnScoreChanged?.Invoke(_score);
         }
 
+        public void AddScoreForEnemyKill()
+        {
+            // Score de base aléatoire entre 13 et 69
+            int baseScore = UnityEngine.Random.Range(13, 70);
+
+            // Applique le multiplicateur
+            int finalScore = Mathf.RoundToInt(baseScore * _currentScoreMultiplier);
+
+            AddScore(finalScore);
+
+            Debug.Log($"Enemy tué! Score de base: {baseScore}, Multiplicateur: {_currentScoreMultiplier}x, Score final: {finalScore}");
+        }
+        public void SetScoreMultiplier(float multiplier)
+        {
+            _currentScoreMultiplier = multiplier;
+        }
+
+        public float GetScoreMultiplier()
+        {
+            return _currentScoreMultiplier;
+        }
         // Getters
         public bool IsGameStarted() => isGameStarted;
         public bool IsGamePaused() => isGamePaused;

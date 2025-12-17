@@ -4,8 +4,6 @@ namespace NoScope
 {
     public class SmallEnemy : EnemyBase
     {
-        [Header("Small Enemy Settings")]
-        [SerializeField] private float lifetime = 10f;
 
         protected override void Start()
         {
@@ -33,6 +31,12 @@ namespace NoScope
 
         protected override void Die()
         {
+            // Ajoute des points au score avant de mourir
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddScoreForEnemyKill();
+            }
+            
             base.Die();
         }
     }

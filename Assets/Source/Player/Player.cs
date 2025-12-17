@@ -10,7 +10,7 @@ namespace NoScope
     {
 
         [Header("Values")]
-        [SerializeField] public int Life { get; private set; }
+        [SerializeField] public int Life = 3;
 
         [Header("Movement Settings")]
         [SerializeField] private float baseSpeed = 10f;
@@ -316,8 +316,6 @@ namespace NoScope
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"Player trigger with: {other.gameObject.name}, tag: {other.tag}");
-
             // Ignore les bullets
             if (other.CompareTag("Bullet"))
                 return;
@@ -344,10 +342,7 @@ namespace NoScope
                     _lastQTEStartTime = Time.time;
                     QTEManager.Instance.StartQTE();
                 }
-                else
-                {
-                    Debug.LogWarning($"QTE not started - QTEManager null: {QTEManager.Instance == null}, IsActive: {QTEManager.Instance?.IsQTEActive()}");
-                }
+               
             }
         }
 
