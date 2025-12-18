@@ -13,17 +13,14 @@ namespace NoScope
             // Quand le Player entre dans le trigger, génère le prochain Ground
             if (other.CompareTag("Player"))
             {
-                Debug.Log($"[PipeEndTrigger] Player détecté !");
-
                 if (PipeGenerator.Instance != null)
                 {
-                    Debug.Log($"[PipeEndTrigger] Appel de SpawnNextPipe()");
                     PipeGenerator.Instance.SpawnNextPipe();
                     PipeGenerator.Instance.AskRemoveOldestPipe();
                 }
                 else
                 {
-                    Debug.LogError($"[PipeEndTrigger] PipeGenerator.Instance est NULL !");
+                    Debug.LogError("[PipeEndTrigger] PipeGenerator.Instance est null !");
                 }
             }
         }

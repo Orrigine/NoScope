@@ -21,10 +21,6 @@ namespace NoScope
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject enemyMassPrefab;
 
-        [Header("Scene References (Optional)")]
-        [SerializeField] private Player existingPlayer; // Si déjà dans la scène
-        [SerializeField] private EnemyMass existingEnemyMass; // Si déjà dans la scène
-
         private Player _currentPlayer;
         private EnemyMass _currentEnemyMass;
         private float _gameTime = 0f;
@@ -52,9 +48,32 @@ namespace NoScope
             }
         }
 
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            // Si c'est la scène de jeu, démarre automatiquement
+            if (scene.name == "Game" && !isGameStarted)
+            {
+                StartGame();
+            }
+        }
+
         private void Start()
         {
-            // Initialisation
+            // Si on est déjà dans Game au lancement (pas de MainMenu), démarre
+            if (SceneManager.GetActiveScene().name == "Game" && !isGameStarted)
+            {
+                StartGame();
+            }
         }
 
         private void Update()
@@ -79,6 +98,11 @@ namespace NoScope
                 QTEManager.Instance.ResetState();
             }
 
+            if (PipeGenerator.Instance != null)
+            {
+                PipeGenerator.Instance.ResetState();
+            }
+
             // Réinitialise l'état du jeu
             isGameStarted = false;
             isGamePaused = false;
@@ -100,13 +124,13 @@ namespace NoScope
             _gameTime = 0f;
             _score = 0;
 
-            // Utilise le joueur existant ou spawn un nouveau
-            if (existingPlayer != null)
+            // Trouve le joueur dans la scène active
+            _currentPlayer = FindFirstObjectByType<Player>();
+
+            // Si pas trouvé, spawn un nouveau
+            if (_currentPlayer == null && playerPrefab != null)
             {
-                _currentPlayer = existingPlayer;
-            }
-            else if (playerPrefab != null)
-            {
+                Debug.Log("[GameManager] Aucun Player trouvé, spawn d'un nouveau");
                 GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
                 _currentPlayer = playerObj.GetComponent<Player>();
             }
@@ -115,15 +139,19 @@ namespace NoScope
             {
                 _currentPlayer.OnPlayerDie += OnPlayerDeath;
             }
-
-            // Utilise la masse ennemie existante ou spawn une nouvelle
-            if (existingEnemyMass != null)
+            else
             {
-                _currentEnemyMass = existingEnemyMass;
+                Debug.LogError("[GameManager] Impossible de trouver ou créer le Player !");
             }
-            else if (enemyMassPrefab != null)
+
+            // Trouve la masse ennemie dans la scène active
+            _currentEnemyMass = FindFirstObjectByType<EnemyMass>();
+
+            // Si pas trouvé, spawn une nouvelle
+            if (_currentEnemyMass == null && enemyMassPrefab != null)
             {
-                Vector3 spawnPos = Vector3.back * 30f; // Derrière le joueur
+                Debug.Log("[GameManager] Aucune EnemyMass trouvée, spawn d'une nouvelle");
+                Vector3 spawnPos = Vector3.back * 30f;
                 GameObject enemyObj = Instantiate(enemyMassPrefab, spawnPos, Quaternion.identity);
                 _currentEnemyMass = enemyObj.GetComponent<EnemyMass>();
             }
@@ -133,6 +161,8 @@ namespace NoScope
             {
                 StateMachine.Instance.ChangeState(StatePlay.Instance);
             }
+
+            Debug.Log($"[GameManager] Invocation de OnGameStart - Abonnés: {OnGameStart?.GetInvocationList()?.Length ?? 0}");
             OnGameStart?.Invoke();
         }
 
@@ -240,6 +270,7 @@ namespace NoScope
         public void AddScore(int points)
         {
             _score += points;
+            Debug.Log($"[GameManager] AddScore appelé - Points ajoutés: {points}, Score total: {_score}, Abonnés OnScoreChanged: {OnScoreChanged?.GetInvocationList()?.Length ?? 0}");
             OnScoreChanged?.Invoke(_score);
         }
 

@@ -75,15 +75,7 @@ namespace NoScope
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
         }
 
         private void Update()
@@ -287,6 +279,12 @@ namespace NoScope
                 GameManager.Instance.SetScoreMultiplier(_currentScoreMultiplier);
             }
 
+            // Met à jour l'affichage visuel du multiplicateur dans UIManager
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateMultiplier(_currentScoreMultiplier, styleRanks[_currentRankLevel]);
+            }
+
             if (qteUIPanel != null)
                 qteUIPanel.SetActive(false);
 
@@ -318,6 +316,12 @@ namespace NoScope
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.SetScoreMultiplier(_currentScoreMultiplier);
+            }
+
+            // Met à jour l'affichage visuel du multiplicateur dans UIManager
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateMultiplier(_currentScoreMultiplier, styleRanks[0]);
             }
 
             if (qteUIPanel != null)

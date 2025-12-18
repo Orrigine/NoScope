@@ -23,14 +23,7 @@ namespace NoScope
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
         }
 
         private void Start()
@@ -42,7 +35,7 @@ namespace NoScope
             {
                 _activePipes.AddLast(initialScenePipe);
                 _nextSpawnPosition = initialScenePipe.endPoint.position + Vector3.forward * pipeSpacing;
-                Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}");
+                // Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}");
 
                 // Génère les pipes suivantes (une de moins car on a déjà la première)
                 for (int i = 0; i < initialPipeCount - 1; i++)
@@ -54,6 +47,34 @@ namespace NoScope
             {
                 _nextSpawnPosition = Vector3.zero; // Position initiale à l'origine
                 GenerateInitialPipes();
+            }
+        }
+
+        public void ResetState()
+        {
+            // Désactive toutes les pipes actives et les remet dans le pool
+            while (_activePipes.Count > 0)
+            {
+                Pipes pipe = _activePipes.First.Value;
+                _activePipes.RemoveFirst();
+                if (pipe != null && pipe != initialScenePipe)
+                {
+                    pipe.Deactivate();
+                    _pipePool.Enqueue(pipe);
+                }
+            }
+
+            // Recommence avec la pipe initiale
+            if (initialScenePipe != null)
+            {
+                _activePipes.AddLast(initialScenePipe);
+                _nextSpawnPosition = initialScenePipe.endPoint.position + Vector3.forward * pipeSpacing;
+
+                // Génère les pipes initiales
+                for (int i = 0; i < initialPipeCount - 1; i++)
+                {
+                    SpawnNextPipe();
+                }
             }
         }
 
@@ -103,8 +124,6 @@ namespace NoScope
 
             _activePipes.AddLast(newPipe);
 
-            Debug.Log($"Spawned pipe at {newPipe.transform.position}, startPoint: {newPipe.startPoint.position}, endPoint: {newPipe.endPoint.position}, next spawn: {_nextSpawnPosition}");
-
             // Prépare la prochaine position = endPoint de cette pipe + espacement
             _nextSpawnPosition = newPipe.endPoint.position + Vector3.forward * pipeSpacing;
         }
@@ -113,7 +132,6 @@ namespace NoScope
         {
             if (_activePipes.Count <= pipesBeforeRemoval)
             {
-                Debug.Log($"Pas assez de pipes pour en supprimer. Actif: {_activePipes.Count}, Minimum requis: {pipesBeforeRemoval + 1}");
                 return;
             }
 

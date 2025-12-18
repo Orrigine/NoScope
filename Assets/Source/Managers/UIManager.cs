@@ -8,41 +8,40 @@ namespace NoScope
     {
         public static UIManager Instance { get; private set; }
 
-        [Header("UI Panels")]
+        [Header("UI Panels - MainMenu")]
         [SerializeField] private GameObject mainMenuPanel;
+        [SerializeField] private GameObject creditsPanel;
+        [SerializeField] private GameObject settingsPanel;
+
+        [Header("UI Panels - Game")]
         [SerializeField] private GameObject gameplayPanel;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject victoryPanel;
-        [SerializeField] private GameObject creditsPanel;
-        [SerializeField] private GameObject settingsPanel;
-
-        [Header("Gameplay UI")]
-        [SerializeField] private TextMeshProUGUI speedText;
-        [SerializeField] private TextMeshProUGUI scoreText;
-        [SerializeField] private TextMeshProUGUI timeText;
-        [SerializeField] private Slider enemyHealthSlider;
-        [SerializeField] private TextMeshProUGUI enemyHealthText;
-
-        [Header("QTE UI")]
         [SerializeField] private GameObject qtePanel;
-        [SerializeField] private TextMeshProUGUI qteSequenceText;
+
+        [Header("UI Elements - Gameplay")]
+        [SerializeField] private TextMeshProUGUI _speedText;
+        [SerializeField] private TextMeshProUGUI _scoreText;
+        [SerializeField] private TextMeshProUGUI _timeText;
+        [SerializeField] private Slider _enemyHealthSlider;
+        [SerializeField] private TextMeshProUGUI _enemyHealthText;
+        [SerializeField] private TextMeshProUGUI _multiplierText;
+        [SerializeField] private TextMeshProUGUI _multiplierScoreText; // Le chiffre du multiplicateur
+
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            // UIManager existe dans chaque scène, pas de singleton persistant
+            Instance = this;
         }
 
         private void Start()
         {
-            // S'abonne aux événements
+            SubscribeToEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.OnGameStart += OnGameStart;
@@ -52,8 +51,19 @@ namespace NoScope
                 GameManager.Instance.OnGameWin += OnGameWin;
                 GameManager.Instance.OnScoreChanged += UpdateScore;
             }
+        }
 
-            ShowMainMenu();
+        private void OnDestroy()
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnGameStart -= OnGameStart;
+                GameManager.Instance.OnGamePause -= OnGamePause;
+                GameManager.Instance.OnGameResume -= OnGameResume;
+                GameManager.Instance.OnGameLose -= OnGameLose;
+                GameManager.Instance.OnGameWin -= OnGameWin;
+                GameManager.Instance.OnScoreChanged -= UpdateScore;
+            }
         }
 
         private void Update()
@@ -67,43 +77,62 @@ namespace NoScope
         private void UpdateGameplayUI()
         {
             // Met à jour le temps
-            if (timeText != null)
+            if (_timeText != null)
             {
                 float gameTime = GameManager.Instance.GetGameTime();
                 int minutes = Mathf.FloorToInt(gameTime / 60f);
                 int seconds = Mathf.FloorToInt(gameTime % 60f);
-                timeText.text = $"Time: {minutes:00}:{seconds:00}";
+                _timeText.text = $"Time: {minutes:00}:{seconds:00}";
             }
-
-            // Met à jour la vitesse
-            Player player = GameManager.Instance.GetPlayer();
-            if (player != null && speedText != null)
-            {
-                speedText.text = $"Speed: {player.GetCurrentSpeed():F1}";
-            }
+            
 
             // Met à jour la barre de vie de l'ennemi
             EnemyMass enemy = GameManager.Instance.GetEnemyMass();
             if (enemy != null)
             {
-                if (enemyHealthSlider != null)
+                if (_enemyHealthSlider != null)
                 {
-                    enemyHealthSlider.value = enemy.GetHealthPercentage();
+                    _enemyHealthSlider.value = enemy.GetHealthPercentage();
                 }
 
-                if (enemyHealthText != null)
+                if (_enemyHealthText != null)
                 {
-                    enemyHealthText.text = $"Enemy HP: {enemy.GetHealthPercentage() * 100f:F0}%";
+                    // _enemyHealthText.text = $"Enemy HP: {enemy.GetHealthPercentage() * 100f:F0}%";
                 }
             }
         }
 
         private void UpdateScore(int score)
         {
-            if (scoreText != null)
+            if (_scoreText != null)
             {
-                scoreText.text = $"Score: {score}";
+                _scoreText.text = $"Score: {score}";
             }
+        }
+
+        /// <summary>
+        /// Met à jour l'affichage du multiplicateur et du texte de style rank
+        /// </summary>
+        /// <param name="multiplier">Le chiffre du multiplicateur (ex: 3.5)</param>
+        /// <param name="rankText">Le texte du style rank (ex: "Smokin' Sexy Style!!")</param>
+        public void UpdateMultiplier(float multiplier, string rankText)
+        {
+            if (_multiplierScoreText != null)
+            {
+                _multiplierScoreText.text = $"x{multiplier:F1}";
+            }
+
+            if (_multiplierText != null)
+            {
+                _multiplierText.text = rankText;
+            }
+        }
+
+        public void ShowGameplayUI()
+        {
+            HideAllPanels();
+            if (gameplayPanel != null)
+                gameplayPanel.SetActive(true);
         }
 
         public void ShowMainMenu()

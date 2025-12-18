@@ -34,9 +34,14 @@ namespace NoScope
             // Ajoute des points au score avant de mourir
             if (GameManager.Instance != null)
             {
+                Debug.Log("[SmallEnemy] Appel de AddScoreForEnemyKill");
                 GameManager.Instance.AddScoreForEnemyKill();
             }
-            
+            else
+            {
+                Debug.LogError("[SmallEnemy] GameManager.Instance est null, impossible d'ajouter du score !");
+            }
+
             base.Die();
         }
     }
