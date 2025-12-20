@@ -144,13 +144,11 @@ namespace NoScope
         public override void TakeDamage(float damage)
         {
             base.TakeDamage(damage);
-            Debug.Log($"Mass Enemy HP: {GetCurrentHealth()}/{GetMaxHealth()}");
         }
 
         public void IncreaseSpeed()
         {
             moveSpeed += speedIncreasePerFailedQTE;
-            Debug.Log($"Mass Enemy speed increased to: {moveSpeed}");
         }
     }
 }

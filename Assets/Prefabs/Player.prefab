@@ -1113,6 +1113,63 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.2556805, y: 1.7666743, z: 1.238831}
     m_Extent: {x: 0.15803263, y: 0.12942737, z: 0.16765803}
   m_DirtyAABB: 0
+--- !u!1 &3323317639102907292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4274678106875040715}
+  - component: {fileID: 5800761886948052665}
+  m_Layer: 0
+  m_Name: SprayWeapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4274678106875040715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323317639102907292}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.26622, y: 2.30019, z: -0.68575}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6353783878254108825}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5800761886948052665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323317639102907292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61e9dfc8e24727f46b72826379105d06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoScope.SprayWeapon
+  weaponName: Sprayyyyyyyyyyy
+  baseBulletsPerSecond: 4
+  maxBulletsPerSecond: 10
+  minBulletsPerSecond: 1
+  fireRateIncreasePerQTE: 0.5
+  fireRateDecayRate: 0.1
+  bulletPrefab: {fileID: 8913189597573206183, guid: b89d3665b4ae98c429dc86cad516b9b8, type: 3}
+  gunPoints:
+  - {fileID: 8624385191858589240}
+  bulletSpeed: 20
+  bulletLifetime: 5
+  bulletsPerShot: 7
+  maxSpreadAngle: 70
 --- !u!1 &3346245633821848315
 GameObject:
   m_ObjectHideFlags: 0
@@ -1696,6 +1753,62 @@ Transform:
   - {fileID: 9071318277984371268}
   m_Father: {fileID: 7130373156010382490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4343862375825472146
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3279249797247190025}
+  - component: {fileID: 4701161142744266296}
+  m_Layer: 0
+  m_Name: BasicWeapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3279249797247190025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4343862375825472146}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.26622, y: 2.30019, z: -0.68575}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6353783878254108825}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4701161142744266296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4343862375825472146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bab5e52638e7ef846963c4994e14818d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoScope.BasicWeapon
+  weaponName: Weapon
+  baseBulletsPerSecond: 2
+  maxBulletsPerSecond: 10
+  minBulletsPerSecond: 1
+  fireRateIncreasePerQTE: 0.5
+  fireRateDecayRate: 0.1
+  bulletPrefab: {fileID: 8913189597573206183, guid: b89d3665b4ae98c429dc86cad516b9b8, type: 3}
+  gunPoints:
+  - {fileID: 6375376009751398688}
+  - {fileID: 6458159550792982911}
+  bulletSpeed: 20
+  bulletLifetime: 5
 --- !u!1 &4347775228135302915
 GameObject:
   m_ObjectHideFlags: 0
@@ -2081,8 +2194,11 @@ Transform:
   m_Children:
   - {fileID: 6375376009751398688}
   - {fileID: 6458159550792982911}
+  - {fileID: 3279249797247190025}
   - {fileID: 5043739574907892664}
   - {fileID: 5948150449883819767}
+  - {fileID: 4274678106875040715}
+  - {fileID: 8624385191858589240}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9183332219604587697
@@ -2097,6 +2213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17c28708e1b43ec4a961c8d16560a151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  Life: 3
   baseSpeed: 20
   maxSpeed: 30
   minSpeed: 5
@@ -2110,15 +2227,7 @@ MonoBehaviour:
   jumpForce: 10
   gravity: -20
   airTime: 1
-  bulletPrefab: {fileID: 8913189597573206183, guid: b89d3665b4ae98c429dc86cad516b9b8, type: 3}
-  gunPoints:
-  - {fileID: 6375376009751398688}
-  - {fileID: 6458159550792982911}
-  baseBulletsPerSecond: 2
-  maxBulletsPerSecond: 10
-  minBulletsPerSecond: 1
-  fireRateIncreasePerQTE: 0.05
-  fireRateDecayRate: 0.02
+  currentWeapon: {fileID: 4701161142744266296}
   rb: {fileID: 1563536668160905777}
 --- !u!65 &3031726335553966024
 BoxCollider:
@@ -3591,6 +3700,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5981844637362842529}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8556977224969038225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8624385191858589240}
+  m_Layer: 0
+  m_Name: SprayGunPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8624385191858589240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8556977224969038225}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.98, z: -3.32}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6353783878254108825}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8560530667645068351
 GameObject:

@@ -83,8 +83,6 @@ namespace NoScope
             // Spawne la rampe SANS parent pour garder son scale et rotation du prefab
             // Le Ground garde juste une référence pour la détruire plus tard
             _spawnedRamp = Instantiate(rampPrefab, worldPosition, rampPrefab.transform.rotation);
-
-            Debug.Log($"Rampe spawnée à la position: {worldPosition} dans la zone {rampSpawnArea.name} avec scale {_spawnedRamp.transform.localScale}");
         }
 
         public bool IsPlayerPast(Vector3 playerPosition)

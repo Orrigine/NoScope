@@ -15,7 +15,6 @@ namespace NoScope.States
 
         public void Enter()
         {
-            Debug.Log("Entering Style State - QTE Time!");
             // IMPORTANT : Garde le temps actif pour permettre la physique du saut
             Time.timeScale = 0.5f;
         }
@@ -29,7 +28,6 @@ namespace NoScope.States
 
         public void Exit()
         {
-            Debug.Log("Exiting Style State - Resuming Game");
             // Assure que le temps est bien normal
             Time.timeScale = 1f;
         }

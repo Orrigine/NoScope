@@ -28,6 +28,23 @@ namespace NoScope
     {
         public static QTEManager Instance { get; private set; }
 
+        [Header("Style Rank Settings")]
+        [SerializeField]
+        private string[] styleRanks = new string[]
+        {
+            "Dismal",
+            "Crazy",
+            "Badass",
+            "Apocalyptic!",
+            "Savage!",
+            "Sick Skills!!",
+            "Smokin' Sexy Style!!"
+        };
+        [SerializeField] private float baseMultiplier = 1f;
+        [SerializeField] private float minMultiplierIncrease = 0.7f;
+        [SerializeField] private float maxMultiplierIncrease = 1.9f;
+        [SerializeField] private int maxRankLevel = 6; // Index max (7 rangs au total : 0-6)
+
         [Header("QTE Settings")]
         [SerializeField] private int minSequenceLength = 3;
         [SerializeField] private int maxSequenceLength = 6;
@@ -53,18 +70,12 @@ namespace NoScope
         private float _timeRemaining;
         private int _successfulQTECount = 0; // QTE consécutives réussies (reset sur échec)
         private int _totalQTECount = 0; // QTE totales effectuées (jamais reset)
+        private float _currentScoreMultiplier = 1f;
+        private int _currentRankLevel = 0; // 0 = Dismal, 6 = Smokin' Sexy Style!!
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
         }
 
         private void Update()
@@ -77,8 +88,6 @@ namespace NoScope
 
         public void StartQTE()
         {
-            Debug.Log("StartQTE called!");
-
             if (_isQTEActive)
             {
                 Debug.LogWarning("QTE already active, ignoring StartQTE");
@@ -94,10 +103,6 @@ namespace NoScope
                 Debug.Log("Changing to StateStyle...");
                 StateMachine.Instance.ChangeState(StateStyle.Instance);
             }
-            else
-            {
-                Debug.LogError("StateMachine.Instance is null!");
-            }
 
             // Génère une nouvelle séquence
             GenerateSequence();
@@ -108,10 +113,7 @@ namespace NoScope
                 qteUIPanel.SetActive(true);
                 Debug.Log("QTE UI Panel activated");
             }
-            else
-            {
-                Debug.LogWarning("qteUIPanel is null - no UI will be shown");
-            }
+
 
             OnQTEStarted?.Invoke();
 
@@ -137,7 +139,6 @@ namespace NoScope
             CurrentTimeLimit = Mathf.Max(CurrentTimeLimit, minTimeLimit);
             _timeRemaining = CurrentTimeLimit;
 
-            Debug.Log($"QTE totales: {_totalQTECount}, Consécutives: {_successfulQTECount}, Time limit = {CurrentTimeLimit:F2}s, Sequence length = {length}");
 
             UpdateUI();
         }
@@ -242,7 +243,6 @@ namespace NoScope
                     {
                         float timePercent = _timeRemaining / CurrentTimeLimit;
 
-                        // Lerp entre rouge (0%) et vert (100%)
                         fillImage.color = Color.Lerp(Color.red, Color.green, timePercent);
                     }
                 }
@@ -259,11 +259,31 @@ namespace NoScope
 
         private void SuccessQTE()
         {
-            Debug.Log("QTE SUCCESS! Returning to StatePlay...");
-
             _isQTEActive = false;
             _successfulQTECount++; // QTE consécutives
             _totalQTECount++; // QTE totales (jamais reset)
+
+            // Incrémente le multiplicateur et le rang si possible
+            if (_currentRankLevel < maxRankLevel)
+            {
+                float multiplierIncrease = UnityEngine.Random.Range(minMultiplierIncrease, maxMultiplierIncrease);
+                _currentScoreMultiplier += multiplierIncrease;
+                _currentRankLevel++;
+
+                Debug.Log($"Style Rank UP! {styleRanks[_currentRankLevel]} - Multiplicateur: {_currentScoreMultiplier:F2}x");
+            }
+
+            // Met à jour le multiplicateur dans GameManager
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetScoreMultiplier(_currentScoreMultiplier);
+            }
+
+            // Met à jour l'affichage visuel du multiplicateur dans UIManager
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateMultiplier(_currentScoreMultiplier, styleRanks[_currentRankLevel]);
+            }
 
             if (qteUIPanel != null)
                 qteUIPanel.SetActive(false);
@@ -271,28 +291,38 @@ namespace NoScope
             // Réinitialise la vélocité du player pour éviter les mouvements résiduels
             ResetPlayerVelocity();
 
-            // Retour à StatePlay (reprise du temps)
-            if (StateMachine.Instance != null)
-            {
-                Debug.Log("Changing state from Style to Play");
-                StateMachine.Instance.ChangeState(StatePlay.Instance);
-            }
-            else
-            {
-                Debug.LogError("StateMachine.Instance is null!");
-            }
+            StateMachine.Instance.ChangeState(StatePlay.Instance);
 
+
+            // GameManager.Instance.AddScore();
             OnQTEComplete?.Invoke(true);
             StopAllCoroutines();
         }
 
         private void FailQTE()
         {
-            Debug.Log("QTE FAILED! Returning to StatePlay...");
 
             _isQTEActive = false;
             _successfulQTECount = 0; // Reset uniquement le compteur consécutif
-            // _totalQTECount n'est PAS reset, la difficulté continue d'augmenter
+                                     // _totalQTECount n'est PAS reset, la difficulté continue d'augmenter
+
+            // Réinitialise le multiplicateur et le rang
+            _currentScoreMultiplier = baseMultiplier;
+            _currentRankLevel = 0;
+
+            Debug.Log($"QTE ratée! Style Rank réinitialisé à {styleRanks[0]} - Multiplicateur: {_currentScoreMultiplier}x");
+
+            // Met à jour le multiplicateur dans GameManager
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetScoreMultiplier(_currentScoreMultiplier);
+            }
+
+            // Met à jour l'affichage visuel du multiplicateur dans UIManager
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateMultiplier(_currentScoreMultiplier, styleRanks[0]);
+            }
 
             if (qteUIPanel != null)
                 qteUIPanel.SetActive(false);
@@ -300,16 +330,8 @@ namespace NoScope
             // Réinitialise la vélocité du player pour éviter les mouvements résiduels
             ResetPlayerVelocity();
 
-            // Retour à StatePlay (reprise du temps)
-            if (StateMachine.Instance != null)
-            {
-                Debug.Log("Changing state from Style to Play");
-                StateMachine.Instance.ChangeState(StatePlay.Instance);
-            }
-            else
-            {
-                Debug.LogError("StateMachine.Instance is null!");
-            }
+            StateMachine.Instance.ChangeState(StatePlay.Instance);
+
 
             OnQTEComplete?.Invoke(false);
             StopAllCoroutines();
@@ -389,6 +411,21 @@ namespace NoScope
         public int GetSuccessfulQTECount()
         {
             return _successfulQTECount;
+        }
+
+        public string GetCurrentStyleRank()
+        {
+            return styleRanks[_currentRankLevel];
+        }
+
+        public float GetCurrentMultiplier()
+        {
+            return _currentScoreMultiplier;
+        }
+
+        public int GetCurrentRankLevel()
+        {
+            return _currentRankLevel;
         }
 
         public void ResetState()

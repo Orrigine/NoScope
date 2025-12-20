@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2977699382394397548}
   - component: {fileID: 5066457575368790411}
   m_Layer: 0
-  m_Name: SmallEnemy
+  m_Name: Zomblar
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,8 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NoScope.SmallEnemy
   maxHealth: 200
   currentHealth: 0
-  moveSpeed: 15
+  moveSpeed: 31
   damageToPlayer: 50
   damageEffectPrefab: {fileID: 0}
   healthBarTransform: {fileID: 0}
-  lifetime: 30

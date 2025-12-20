@@ -4,15 +4,11 @@ namespace NoScope
 {
     public class SmallEnemy : EnemyBase
     {
-        [Header("Small Enemy Settings")]
-        [SerializeField] private float lifetime = 10f;
 
         protected override void Start()
         {
             base.Start();
 
-            // Auto-destruction après un certain temps
-            Destroy(gameObject, lifetime);
         }
 
         protected override void FollowPlayer()
@@ -28,14 +24,24 @@ namespace NoScope
                 Player player = other.GetComponent<Player>();
                 if (player != null)
                 {
-                    // Le joueur meurt au contact
-                    Die();
+                    player.DecrementHealth();
                 }
             }
         }
 
         protected override void Die()
         {
+            // Ajoute des points au score avant de mourir
+            if (GameManager.Instance != null)
+            {
+                Debug.Log("[SmallEnemy] Appel de AddScoreForEnemyKill");
+                GameManager.Instance.AddScoreForEnemyKill();
+            }
+            else
+            {
+                Debug.LogError("[SmallEnemy] GameManager.Instance est null, impossible d'ajouter du score !");
+            }
+
             base.Die();
         }
     }

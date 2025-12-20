@@ -23,14 +23,7 @@ namespace NoScope
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
         }
 
         private void Start()
@@ -42,7 +35,7 @@ namespace NoScope
             {
                 _activePipes.AddLast(initialScenePipe);
                 _nextSpawnPosition = initialScenePipe.endPoint.position + Vector3.forward * pipeSpacing;
-                Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}");
+                // Debug.Log($"Using initial scene pipe at {initialScenePipe.transform.position}");
 
                 // Génère les pipes suivantes (une de moins car on a déjà la première)
                 for (int i = 0; i < initialPipeCount - 1; i++)
@@ -54,6 +47,34 @@ namespace NoScope
             {
                 _nextSpawnPosition = Vector3.zero; // Position initiale à l'origine
                 GenerateInitialPipes();
+            }
+        }
+
+        public void ResetState()
+        {
+            // Désactive toutes les pipes actives et les remet dans le pool
+            while (_activePipes.Count > 0)
+            {
+                Pipes pipe = _activePipes.First.Value;
+                _activePipes.RemoveFirst();
+                if (pipe != null && pipe != initialScenePipe)
+                {
+                    pipe.Deactivate();
+                    _pipePool.Enqueue(pipe);
+                }
+            }
+
+            // Recommence avec la pipe initiale
+            if (initialScenePipe != null)
+            {
+                _activePipes.AddLast(initialScenePipe);
+                _nextSpawnPosition = initialScenePipe.endPoint.position + Vector3.forward * pipeSpacing;
+
+                // Génère les pipes initiales
+                for (int i = 0; i < initialPipeCount - 1; i++)
+                {
+                    SpawnNextPipe();
+                }
             }
         }
 
@@ -103,10 +124,18 @@ namespace NoScope
 
             _activePipes.AddLast(newPipe);
 
-            Debug.Log($"Spawned pipe at {newPipe.transform.position}, startPoint: {newPipe.startPoint.position}, endPoint: {newPipe.endPoint.position}, next spawn: {_nextSpawnPosition}");
-
             // Prépare la prochaine position = endPoint de cette pipe + espacement
             _nextSpawnPosition = newPipe.endPoint.position + Vector3.forward * pipeSpacing;
+        }
+
+        public void AskRemoveOldestPipe()
+        {
+            if (_activePipes.Count <= pipesBeforeRemoval)
+            {
+                return;
+            }
+
+            RemoveOldestPipe();
         }
 
         private void RemoveOldestPipe()
@@ -118,40 +147,6 @@ namespace NoScope
 
             oldestPipe.Deactivate();
             _pipePool.Enqueue(oldestPipe);
-        }
-
-        public void CheckPlayerPosition(Vector3 playerPosition)
-        {
-            // Ne génère pas si on n'a pas assez de pipes actives
-            if (_activePipes.Count == 0) return;
-
-            // Compte combien de pipes le joueur a dépassées
-            int pipesPassedCount = 0;
-            foreach (Pipes pipe in _activePipes)
-            {
-                if (pipe.IsPlayerPast(playerPosition))
-                {
-                    pipesPassedCount++;
-                }
-                else
-                {
-                    break; // Arrête dès qu'on trouve une pipe non dépassée
-                }
-            }
-
-            // Si le joueur a dépassé plus de pipesBeforeRemoval, on supprime les plus anciennes
-            int pipesToRemove = pipesPassedCount - pipesBeforeRemoval;
-            if (pipesToRemove > 0)
-            {
-                for (int i = 0; i < pipesToRemove; i++)
-                {
-                    // Supprime d'abord la plus ancienne
-                    RemoveOldestPipe();
-
-                    // Spawn une nouvelle pipe pour la remplacer
-                    SpawnNextPipe();
-                }
-            }
         }
 
         public Pipes GetCurrentPipe()

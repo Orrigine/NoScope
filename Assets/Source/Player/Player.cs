@@ -2,15 +2,20 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using System.Runtime.CompilerServices;
 
 namespace NoScope
 {
     public class Player : MonoBehaviour
     {
+
+        [Header("Values")]
+        [SerializeField] public int Life = 3;
+
         [Header("Movement Settings")]
         [SerializeField] private float baseSpeed = 10f;
         [SerializeField] private float maxSpeed = 30f;
-        [SerializeField] private float minSpeed = 5f; // Vitesse minimum absolue
+        [SerializeField] private float minSpeed = 5f;
         [SerializeField] private float speedIncreasePerQTE = 2f;
         [SerializeField] private float speedDecayRate = 0.5f;
         [SerializeField] private float lateralSpeed = 5f;
@@ -28,14 +33,8 @@ namespace NoScope
         [SerializeField] private float gravity = -20f;
         [SerializeField] private float airTime = 1f;
 
-        [Header("Shooting Settings")]
-        [SerializeField] private GameObject bulletPrefab;
-        [SerializeField] private Transform[] gunPoints;
-        [SerializeField] private float baseBulletsPerSecond = 2f; // Nombre de projectiles par seconde (base)
-        [SerializeField] private float maxBulletsPerSecond = 10f; // Nombre maximum de projectiles par seconde
-        [SerializeField] private float minBulletsPerSecond = 1f; // Nombre minimum de projectiles par seconde (limite absolue)
-        [SerializeField] private float fireRateIncreasePerQTE = 0.5f; // Augmentation en projectiles/sec par QTE
-        [SerializeField] private float fireRateDecayRate = 0.1f; // Réduction en projectiles/sec par seconde
+        [Header("Weapon")]
+        [SerializeField] private Weapon currentWeapon; // L'arme actuelle du joueur
 
         [Header("References")]
         [SerializeField] private Rigidbody rb;
@@ -45,8 +44,6 @@ namespace NoScope
 
         // Private variables
         private float _currentSpeed;
-        private float _currentBulletsPerSecond; // Projectiles par seconde (plus élevé = plus rapide)
-        private float _nextFireTime;
         private bool _isJumping = false;
         private float _jumpTimer = 0f;
         private float _jumpDuration = 0f; // Durée du saut en cours
@@ -55,7 +52,6 @@ namespace NoScope
         private int _consecutiveQTESuccesses = 0;
         private float _lastQTEStartTime = -10f; // Cooldown pour éviter les doubles appels
         private bool _isRecoveringFromFailure = false; // Indique si le joueur récupère d'un échec
-        private bool _isRecoveringFireRate = false; // Indique si le fire rate récupère après division
 
         private void Start()
         {
@@ -67,7 +63,6 @@ namespace NoScope
             Debug.Log($"Player Start: useGravity={rb.useGravity}, constraints={rb.constraints}, mass={rb.mass}");
 
             _currentSpeed = baseSpeed;
-            _currentBulletsPerSecond = baseBulletsPerSecond;
 
             // S'abonne aux événements QTE
             if (QTEManager.Instance != null)
@@ -98,11 +93,28 @@ namespace NoScope
             // Le mouvement continue pendant la QTE pour permettre le saut
             Move();
 
+            // Changement d'arme avec I et J
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.iKey.wasPressedThisFrame)
+                {
+                    SwitchToWeapon<BasicWeapon>();
+                }
+                if (Keyboard.current.jKey.wasPressedThisFrame)
+                {
+                    SwitchToWeapon<SprayWeapon>();
+                }
+            }
+
             // Ne tire pas et ne decay pas pendant la QTE
             bool isQTEActive = QTEManager.Instance != null && QTEManager.Instance.IsQTEActive();
             if (!isQTEActive)
             {
-                Shoot();
+                // Tire avec l'arme actuelle
+                if (currentWeapon != null)
+                {
+                    currentWeapon.Fire();
+                }
                 DecayStats();
             }
         }
@@ -193,43 +205,35 @@ namespace NoScope
             Debug.Log($"DOTween jump started: duration={duration:F2}s, path points={path.Length}");
         }
 
-        private void Shoot()
+        /// <summary>
+        /// Change l'arme actuelle du joueur
+        /// </summary>
+        public void EquipWeapon(Weapon newWeapon)
         {
-            // Ne tire pas pendant la QTE
-            if (QTEManager.Instance != null && QTEManager.Instance.IsQTEActive())
-                return;
+            currentWeapon = newWeapon;
+            Debug.Log($"[Player] Arme équipée: {newWeapon.GetWeaponName()}");
+        }
 
-            if (Time.time >= _nextFireTime)
+        /// <summary>
+        /// Change vers une arme spécifique par son type
+        /// </summary>
+        public void SwitchToWeapon<T>() where T : Weapon
+        {
+            T weapon = GetComponentInChildren<T>(true); // true = inclut les objets désactivés
+            if (weapon != null)
             {
-                FireBullets();
-                // Convertit bullets/sec en intervalle de temps (1 / bullets par seconde = secondes par bullet)
-                float fireInterval = 1f / Mathf.Max(_currentBulletsPerSecond, 0.1f);
-                _nextFireTime = Time.time + fireInterval;
+                EquipWeapon(weapon);
+            }
+            else
+            {
+                Debug.LogWarning($"[Player] Arme de type {typeof(T).Name} introuvable !");
             }
         }
 
-        private void FireBullets()
-        {
-            if (bulletPrefab == null || gunPoints == null || gunPoints.Length == 0)
-                return;
-
-            foreach (Transform gunPoint in gunPoints)
-            {
-                if (gunPoint != null)
-                {
-                    GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, gunPoint.rotation);
-
-                    // Ajoute une vélocité au projectile (vers l'arrière)
-                    Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
-                    if (bulletRb != null)
-                    {
-                        bulletRb.linearVelocity = -transform.forward * 20f;
-                    }
-
-                    Destroy(bullet, 5f);
-                }
-            }
-        }
+        /// <summary>
+        /// Récupère l'arme actuelle
+        /// </summary>
+        public Weapon GetCurrentWeapon() => currentWeapon;
 
         private void OnQTEComplete(bool success)
         {
@@ -240,15 +244,18 @@ namespace NoScope
 
                 // Calcule le bonus avec streak : bonus de base + (streak - 1) * multiplicateur
                 float speedBonus = speedIncreasePerQTE + ((_consecutiveQTESuccesses - 1) * streakBonusMultiplier);
-                float fireRateBonus = fireRateIncreasePerQTE + ((_consecutiveQTESuccesses - 1) * streakBonusMultiplier * 0.1f);
 
                 // Augmente la vitesse avec bonus progressif
                 _currentSpeed = Mathf.Min(_currentSpeed + speedBonus, maxSpeed);
 
-                // Améliore le fire rate avec bonus progressif
-                _currentBulletsPerSecond = Mathf.Min(_currentBulletsPerSecond + fireRateBonus, maxBulletsPerSecond);
+                // Améliore le fire rate de l'arme avec bonus progressif
+                if (currentWeapon != null)
+                {
+                    float fireRateBonus = (_consecutiveQTESuccesses - 1) * streakBonusMultiplier * 0.1f;
+                    currentWeapon.IncreaseFireRate(fireRateBonus);
+                }
 
-                Debug.Log($"QTE Success #{_consecutiveQTESuccesses}! Speed: {_currentSpeed} (+{speedBonus}), Bullets/sec: {_currentBulletsPerSecond} (+{fireRateBonus})");
+                Debug.Log($"QTE Success #{_consecutiveQTESuccesses}! Speed: {_currentSpeed} (+{speedBonus}), FireRate: {currentWeapon?.GetCurrentFireRate()}");
             }
             else
             {
@@ -259,10 +266,12 @@ namespace NoScope
                 _isRecoveringFromFailure = true;
 
                 // Pénalité fire rate : divise par 2
-                _currentBulletsPerSecond = Mathf.Max(_currentBulletsPerSecond / 2f, minBulletsPerSecond); // Ne descend pas en dessous du minimum absolu
-                _isRecoveringFireRate = true;
+                if (currentWeapon != null)
+                {
+                    currentWeapon.DivideFireRate();
+                }
 
-                Debug.Log($"QTE Failed! Speed reduced to: {_currentSpeed}, Fire rate divided by 2: {_currentBulletsPerSecond}");
+                Debug.Log($"QTE Failed! Speed reduced to: {_currentSpeed}, Fire rate divided by 2: {currentWeapon?.GetCurrentFireRate()}");
             }
         }
 
@@ -285,34 +294,16 @@ namespace NoScope
                 _currentSpeed = Mathf.Max(_currentSpeed - speedDecayRate * Time.deltaTime, baseSpeed);
             }
 
-            // Récupération du fire rate après échec QTE
-            if (_isRecoveringFireRate && _currentBulletsPerSecond < baseBulletsPerSecond)
+            // Gère le decay et la récupération du fire rate de l'arme
+            if (currentWeapon != null)
             {
-                _currentBulletsPerSecond = Mathf.Min(_currentBulletsPerSecond + speedRecoveryRate * 0.2f * Time.deltaTime, baseBulletsPerSecond);
-
-                // Arrête la récupération une fois le fire rate de base atteint
-                if (_currentBulletsPerSecond >= baseBulletsPerSecond)
-                {
-                    _isRecoveringFireRate = false;
-                }
-            }
-            // Decay dégressif du fire rate (plus le fire rate est élevé, plus le decay est rapide)
-            else if (_currentBulletsPerSecond > baseBulletsPerSecond)
-            {
-                float excessFireRate = _currentBulletsPerSecond - baseBulletsPerSecond;
-                float decayMultiplier = 1f + (excessFireRate / maxBulletsPerSecond); // Le decay augmente avec l'excès
-
-                _currentBulletsPerSecond = Mathf.Max(
-                    _currentBulletsPerSecond - fireRateDecayRate * decayMultiplier * Time.deltaTime,
-                    baseBulletsPerSecond
-                );
+                currentWeapon.DecayFireRate();
+                currentWeapon.RecoverFireRate();
             }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"Player trigger with: {other.gameObject.name}, tag: {other.tag}");
-
             // Ignore les bullets
             if (other.CompareTag("Bullet"))
                 return;
@@ -339,10 +330,7 @@ namespace NoScope
                     _lastQTEStartTime = Time.time;
                     QTEManager.Instance.StartQTE();
                 }
-                else
-                {
-                    Debug.LogWarning($"QTE not started - QTEManager null: {QTEManager.Instance == null}, IsActive: {QTEManager.Instance?.IsQTEActive()}");
-                }
+
             }
         }
 
@@ -384,5 +372,17 @@ namespace NoScope
             }
 
         }
+        public void DecrementHealth()
+        {
+            if (Life > 0)
+            {
+                Life--;
+            }
+            else
+            {
+                Die();
+            }
+        }
     }
 }
+
