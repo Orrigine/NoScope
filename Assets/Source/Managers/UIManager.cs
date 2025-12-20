@@ -29,6 +29,8 @@ namespace NoScope
         [SerializeField] private TextMeshProUGUI _multiplierText;
         [SerializeField] private TextMeshProUGUI _multiplierScoreText; // Le chiffre du multiplicateur
 
+        private bool _hasCompletedFirstQTE = false; // Track si au moins une QTE a été faite
+
         private void Awake()
         {
             // UIManager existe dans chaque scène, pas de singleton persistant
@@ -37,6 +39,9 @@ namespace NoScope
 
         private void Start()
         {
+            // Cache les éléments de multiplicateur au démarrage
+            HideMultiplierUI();
+
             SubscribeToEvents();
         }
 
@@ -84,7 +89,7 @@ namespace NoScope
                 int seconds = Mathf.FloorToInt(gameTime % 60f);
                 _timeText.text = $"Time: {minutes:00}:{seconds:00}";
             }
-            
+
 
             // Met à jour la barre de vie de l'ennemi
             EnemyMass enemy = GameManager.Instance.GetEnemyMass();
@@ -117,6 +122,13 @@ namespace NoScope
         /// <param name="rankText">Le texte du style rank (ex: "Smokin' Sexy Style!!")</param>
         public void UpdateMultiplier(float multiplier, string rankText)
         {
+            // Affiche les éléments lors de la première QTE
+            if (!_hasCompletedFirstQTE)
+            {
+                ShowMultiplierUI();
+                _hasCompletedFirstQTE = true;
+            }
+
             if (_multiplierScoreText != null)
             {
                 _multiplierScoreText.text = $"x{multiplier:F1}";
@@ -126,6 +138,30 @@ namespace NoScope
             {
                 _multiplierText.text = rankText;
             }
+        }
+
+        /// <summary>
+        /// Cache les éléments de multiplicateur
+        /// </summary>
+        private void HideMultiplierUI()
+        {
+            if (_multiplierScoreText != null)
+                _multiplierScoreText.gameObject.SetActive(false);
+
+            if (_multiplierText != null)
+                _multiplierText.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Affiche les éléments de multiplicateur
+        /// </summary>
+        private void ShowMultiplierUI()
+        {
+            if (_multiplierScoreText != null)
+                _multiplierScoreText.gameObject.SetActive(true);
+
+            if (_multiplierText != null)
+                _multiplierText.gameObject.SetActive(true);
         }
 
         public void ShowGameplayUI()
