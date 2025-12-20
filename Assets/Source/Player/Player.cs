@@ -190,16 +190,21 @@ namespace NoScope
             // Tue le tween précédent s'il existe
             _activeTween?.Kill();
 
-            // Crée le tween avec un path parabolique (Linear pour suivre exactement les points)
-            _activeTween = transform.DOPath(path, duration, PathType.Linear)
-                .SetEase(Ease.Linear) // Linear pour une vitesse constante le long du path
+            // Crée le tween avec un path parabolique (CatmullRom pour une courbe lisse)
+            _activeTween = transform.DOPath(path, duration, PathType.CatmullRom)
+                .SetEase(Ease.InOutCubic) // Accélération au début, décélération à la fin pour un saut naturel
                 .SetUpdate(UpdateType.Normal, true) // useUnscaledTime = true pour ignorer timeScale
                 .OnComplete(() =>
                 {
                     _isJumping = false;
                     _jumpTimer = 0f;
                     _activeTween = null;
-                    Debug.Log("Jump completed via DOTween");
+
+                    // Réinitialise immédiatement la vélocité pour éviter le lag post-saut
+                    _velocity = transform.forward * _currentSpeed;
+                    _velocity.y = 0f;
+
+                    Debug.Log("Jump completed via DOTween - mouvement repris immédiatement");
                 });
 
             Debug.Log($"DOTween jump started: duration={duration:F2}s, path points={path.Length}");

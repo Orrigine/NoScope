@@ -52,7 +52,7 @@ namespace NoScope
                     Vector3 endPos = targetLandingPoint.position;
 
                     // Crée une vraie parabole avec plusieurs points intermédiaires
-                    int numPoints = 10; // Nombre de points pour la courbe
+                    int numPoints = 20; // Nombre de points pour la courbe (augmenté pour plus de précision)
                     Vector3[] path = new Vector3[numPoints];
 
                     float distance = Vector3.Distance(new Vector3(startPos.x, 0, startPos.z), new Vector3(endPos.x, 0, endPos.z));
