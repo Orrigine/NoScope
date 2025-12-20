@@ -192,7 +192,7 @@ namespace NoScope
 
             // Crée le tween avec un path parabolique (CatmullRom pour une courbe lisse)
             _activeTween = transform.DOPath(path, duration, PathType.CatmullRom)
-                .SetEase(Ease.InOutCubic) // Accélération au début, décélération à la fin pour un saut naturel
+                .SetEase(Ease.Linear) // Vitesse constante pour un mouvement fluide et prévisible
                 .SetUpdate(UpdateType.Normal, true) // useUnscaledTime = true pour ignorer timeScale
                 .OnComplete(() =>
                 {
@@ -204,10 +204,8 @@ namespace NoScope
                     _velocity = transform.forward * _currentSpeed;
                     _velocity.y = 0f;
 
-                    Debug.Log("Jump completed via DOTween - mouvement repris immédiatement");
                 });
 
-            Debug.Log($"DOTween jump started: duration={duration:F2}s, path points={path.Length}");
         }
 
         /// <summary>
