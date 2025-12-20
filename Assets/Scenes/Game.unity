@@ -503,8 +503,8 @@ MonoBehaviour:
   maxMultiplierIncrease: 1.9
   maxRankLevel: 6
   minSequenceLength: 3
-  maxSequenceLength: 6
-  baseTimeLimit: 6
+  maxSequenceLength: 5
+  baseTimeLimit: 4.5
   timeLimitReduction: 0.2
   minTimeLimit: 2.5
   qteUIPanel: {fileID: 1619150953}

@@ -214,7 +214,7 @@ MonoBehaviour:
   targetLandingPoint: {fileID: 7697020619416404718}
   arcHeight: 12
   useQTETimeForDuration: 0
-  manualJumpDuration: 3
+  manualJumpDuration: 2
   drawGizmos: 1
 --- !u!1 &7430094950518997125
 GameObject:
