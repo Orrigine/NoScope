@@ -93,16 +93,21 @@ namespace NoScope
             // Le mouvement continue pendant la QTE pour permettre le saut
             Move();
 
-            // Changement d'arme avec I et J
+            // Changement d'arme avec I et J (uniquement en mode debug)
             if (Keyboard.current != null)
             {
-                if (Keyboard.current.iKey.wasPressedThisFrame)
+                // Vérifier si le DebugHUD existe et si le debug est actif
+                DebugHUD debugHUD = FindFirstObjectByType<DebugHUD>();
+                if (debugHUD != null && debugHUD.IsDebugActive)
                 {
-                    SwitchToWeapon<BasicWeapon>();
-                }
-                if (Keyboard.current.jKey.wasPressedThisFrame)
-                {
-                    SwitchToWeapon<SprayWeapon>();
+                    if (Keyboard.current.iKey.wasPressedThisFrame)
+                    {
+                        SwitchToWeapon<BasicWeapon>();
+                    }
+                    if (Keyboard.current.jKey.wasPressedThisFrame)
+                    {
+                        SwitchToWeapon<SprayWeapon>();
+                    }
                 }
             }
 

@@ -14,6 +14,11 @@ namespace NoScope
         [SerializeField] private TextMeshProUGUI debugText;
         [SerializeField] private GameObject debugPanel; // Panel contenant le TextMeshProUGUI
 
+        /// <summary>
+        /// Propriété publique pour vérifier si le debug est actif
+        /// </summary>
+        public bool IsDebugActive => showDebugInfo;
+
         private void Start()
         {
             UpdateDebugVisibility();
@@ -105,7 +110,8 @@ namespace NoScope
             }
 
             // Controls
-            sb.AppendLine("<color=yellow>[P] Toggle Debug | [ESC] Pause | [R] Restart</color>");
+            sb.AppendLine("<color=black>[P] Toggle Debug | [ESC] Pause | [R] Restart</color>");
+            sb.AppendLine("<color=black>[I] Basic Weapon | [J] Spray Weapon</color>");
 
             debugText.text = sb.ToString();
         }

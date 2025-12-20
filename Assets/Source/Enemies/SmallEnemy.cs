@@ -32,7 +32,6 @@ namespace NoScope
             {
                 _hasSpeedBoost = true;
                 moveSpeed *= speedBoostMultiplier;
-                Debug.Log($"[SmallEnemy] Zombie avec boost de vitesse! Speed: {moveSpeed}");
             }
         }
 
