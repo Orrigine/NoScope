@@ -269,7 +269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -307,7 +307,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -348,7 +349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -386,7 +387,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -405,7 +407,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -443,7 +445,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (3)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -500,8 +503,8 @@ MonoBehaviour:
   maxMultiplierIncrease: 1.9
   maxRankLevel: 6
   minSequenceLength: 3
-  maxSequenceLength: 6
-  baseTimeLimit: 6
+  maxSequenceLength: 5
+  baseTimeLimit: 4.5
   timeLimitReduction: 0.2
   minTimeLimit: 2.5
   qteUIPanel: {fileID: 1619150953}
@@ -666,7 +669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -704,7 +707,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (5)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -723,7 +727,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -761,7 +765,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (2)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1244,6 +1249,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1687125393847242724, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.6407127
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687125393847242724, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.443
+      objectReference: {fileID: 0}
     - target: {fileID: 2160828925388399894, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
       propertyPath: m_LocalScale.x
       value: 25
@@ -1254,11 +1267,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2160828925388399894, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.34
+      value: 5.84
       objectReference: {fileID: 0}
     - target: {fileID: 2160828925388399894, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 376.1
+      value: 374.76
       objectReference: {fileID: 0}
     - target: {fileID: 2160828925388399894, guid: 95a4b6724e9fbb441b3060504b054de8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1520,7 +1533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1558,7 +1571,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (4)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1829,7 +1843,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 2.59
       objectReference: {fileID: 0}
     - target: {fileID: 1053759425231509378, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1867,7 +1881,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zomblar (6)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -93,16 +93,21 @@ namespace NoScope
             // Le mouvement continue pendant la QTE pour permettre le saut
             Move();
 
-            // Changement d'arme avec I et J
+            // Changement d'arme avec I et J (uniquement en mode debug)
             if (Keyboard.current != null)
             {
-                if (Keyboard.current.iKey.wasPressedThisFrame)
+                // Vérifier si le DebugHUD existe et si le debug est actif
+                DebugHUD debugHUD = FindFirstObjectByType<DebugHUD>();
+                if (debugHUD != null && debugHUD.IsDebugActive)
                 {
-                    SwitchToWeapon<BasicWeapon>();
-                }
-                if (Keyboard.current.jKey.wasPressedThisFrame)
-                {
-                    SwitchToWeapon<SprayWeapon>();
+                    if (Keyboard.current.iKey.wasPressedThisFrame)
+                    {
+                        SwitchToWeapon<BasicWeapon>();
+                    }
+                    if (Keyboard.current.jKey.wasPressedThisFrame)
+                    {
+                        SwitchToWeapon<SprayWeapon>();
+                    }
                 }
             }
 
@@ -190,19 +195,22 @@ namespace NoScope
             // Tue le tween précédent s'il existe
             _activeTween?.Kill();
 
-            // Crée le tween avec un path parabolique (Linear pour suivre exactement les points)
-            _activeTween = transform.DOPath(path, duration, PathType.Linear)
-                .SetEase(Ease.Linear) // Linear pour une vitesse constante le long du path
+            // Crée le tween avec un path parabolique (CatmullRom pour une courbe lisse)
+            _activeTween = transform.DOPath(path, duration, PathType.CatmullRom)
+                .SetEase(Ease.Linear) // Vitesse constante pour un mouvement fluide et prévisible
                 .SetUpdate(UpdateType.Normal, true) // useUnscaledTime = true pour ignorer timeScale
                 .OnComplete(() =>
                 {
                     _isJumping = false;
                     _jumpTimer = 0f;
                     _activeTween = null;
-                    Debug.Log("Jump completed via DOTween");
+
+                    // Réinitialise immédiatement la vélocité pour éviter le lag post-saut
+                    _velocity = transform.forward * _currentSpeed;
+                    _velocity.y = 0f;
+
                 });
 
-            Debug.Log($"DOTween jump started: duration={duration:F2}s, path points={path.Length}");
         }
 
         /// <summary>
