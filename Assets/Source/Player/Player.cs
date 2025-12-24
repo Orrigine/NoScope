@@ -228,8 +228,7 @@ namespace NoScope
         public void SwitchToWeapon<T>() where T : Weapon
         {
             T weapon = GetComponentInChildren<T>(true); // true = inclut les objets désactivés
-            if (weapon != null)
-            {
+                      if (weapon != null && weapon != currentWeapon)    {
                 EquipWeapon(weapon);
             }
             else
