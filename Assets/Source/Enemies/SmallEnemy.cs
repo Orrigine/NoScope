@@ -15,7 +15,6 @@ namespace NoScope
 
         private Vector3 _spawnDirection; // Direction initiale du spawn
         private bool _isConverging = false; // Si le zombie converge vers le joueur
-        private bool _hasSpeedBoost = false; // Si ce zombie a un boost de vitesse
 
         protected override void Start()
         {
@@ -30,7 +29,6 @@ namespace NoScope
             // Chance aléatoire d'avoir un boost de vitesse
             if (Random.value < speedBoostChance)
             {
-                _hasSpeedBoost = true;
                 moveSpeed *= speedBoostMultiplier;
             }
         }

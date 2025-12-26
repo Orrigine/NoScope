@@ -45,8 +45,7 @@ namespace NoScope
         // Private variables
         private float _currentSpeed;
         private bool _isJumping = false;
-        private float _jumpTimer = 0f;
-        private float _jumpDuration = 0f; // Durée du saut en cours
+
         private Tween _activeTween; // Tween DOTween actif
         private Vector3 _velocity;
         private int _consecutiveQTESuccesses = 0;
@@ -60,7 +59,7 @@ namespace NoScope
 
             // Force la gravité et vérifie les contraintes
             rb.useGravity = true;
-            Debug.Log($"Player Start: useGravity={rb.useGravity}, constraints={rb.constraints}, mass={rb.mass}");
+
 
             _currentSpeed = baseSpeed;
 
@@ -189,8 +188,6 @@ namespace NoScope
             }
 
             _isJumping = true;
-            _jumpTimer = 0f;
-            _jumpDuration = duration;
 
             // Tue le tween précédent s'il existe
             _activeTween?.Kill();
@@ -202,7 +199,6 @@ namespace NoScope
                 .OnComplete(() =>
                 {
                     _isJumping = false;
-                    _jumpTimer = 0f;
                     _activeTween = null;
 
                     // Réinitialise immédiatement la vélocité pour éviter le lag post-saut
@@ -219,7 +215,7 @@ namespace NoScope
         public void EquipWeapon(Weapon newWeapon)
         {
             currentWeapon = newWeapon;
-            Debug.Log($"[Player] Arme équipée: {newWeapon.GetWeaponName()}");
+
         }
 
         /// <summary>
@@ -263,7 +259,7 @@ namespace NoScope
                     currentWeapon.IncreaseFireRate(fireRateBonus);
                 }
 
-                Debug.Log($"QTE Success #{_consecutiveQTESuccesses}! Speed: {_currentSpeed} (+{speedBonus}), FireRate: {currentWeapon?.GetCurrentFireRate()}");
+
             }
             else
             {
@@ -279,7 +275,7 @@ namespace NoScope
                     currentWeapon.DivideFireRate();
                 }
 
-                Debug.Log($"QTE Failed! Speed reduced to: {_currentSpeed}, Fire rate divided by 2: {currentWeapon?.GetCurrentFireRate()}");
+
             }
         }
 
@@ -378,7 +374,6 @@ namespace NoScope
 
 
             _isJumping = false;
-            _jumpTimer = 0f;
 
             if (rb != null)
             {
@@ -390,18 +385,14 @@ namespace NoScope
         public void DecrementHealth()
         {
             Life = Mathf.Max(Life - 1, 0);
-            Debug.Log($"[Player] Life decremented, remaining: {Life}");
+
             if (Life <= 0)
             {
                 Die();
             }
         }
 
-        // Kill the player immediately
-        public void Kill()
-        {
-            Die();
-        }
+
     }
 }
 

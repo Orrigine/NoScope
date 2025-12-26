@@ -25,7 +25,7 @@ namespace NoScope
         protected override void RevertBoost(Player player)
         {
             if (player == null) return;
-            Debug.Log("[WeaponChange] RevertBoost appelé, retour à BasicWeapon");
+
             player.SwitchToWeapon<BasicWeapon>();
         }
 
