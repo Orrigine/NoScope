@@ -316,9 +316,16 @@ namespace NoScope
             if (other.CompareTag("Bullet"))
                 return;
 
-            if (other.CompareTag("Enemy"))
+            // Si c'est la masse ennemie, mort instantanée
+            if (other.CompareTag("EnemyMass"))
             {
                 Die();
+                return;
+            }
+
+            if (other.CompareTag("Enemy"))
+            {
+                DecrementHealth();
             }
             else if (other.CompareTag("TriggerJump"))
             {
@@ -382,14 +389,18 @@ namespace NoScope
         }
         public void DecrementHealth()
         {
-            if (Life > 0)
-            {
-                Life--;
-            }
-            else
+            Life = Mathf.Max(Life - 1, 0);
+            Debug.Log($"[Player] Life decremented, remaining: {Life}");
+            if (Life <= 0)
             {
                 Die();
             }
+        }
+
+        // Kill the player immediately
+        public void Kill()
+        {
+            Die();
         }
     }
 }
