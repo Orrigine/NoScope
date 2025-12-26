@@ -106,7 +106,7 @@ namespace NoScope
                     }
                     if (Keyboard.current.jKey.wasPressedThisFrame)
                     {
-                        SwitchToWeapon<SprayWeapon>();
+                        SwitchToWeapon<Shotgun>();
                     }
                 }
             }
@@ -228,7 +228,8 @@ namespace NoScope
         public void SwitchToWeapon<T>() where T : Weapon
         {
             T weapon = GetComponentInChildren<T>(true); // true = inclut les objets désactivés
-                      if (weapon != null && weapon != currentWeapon)    {
+            if (weapon != null && weapon != currentWeapon)
+            {
                 EquipWeapon(weapon);
             }
             else
