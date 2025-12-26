@@ -253,6 +253,10 @@ MonoBehaviour:
   rampSpawnArea: {fileID: 8841259499803500270}
   rampPrefab: {fileID: 121015407445155552, guid: ed70e5dd8fa17624ea5ff5b6a9aef1ce, type: 3}
   rampSpawnChance: 80
+  boostPrefabs:
+  - {fileID: 5564369211877369050, guid: c603cd0b897fe25468518fc618ba7f57, type: 3}
+  boostSpawnChance: 30
+  maxBoostsPerPipe: 2
   nextPipe: {fileID: 0}
 --- !u!1 &7546921401971422820
 GameObject:
