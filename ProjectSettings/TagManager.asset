@@ -9,6 +9,7 @@ TagManager:
   - Bullet
   - TriggerJump
   - TriggerQTE
+  - EnemyMass
   layers:
   - Default
   - TransparentFX

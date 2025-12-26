@@ -113,7 +113,8 @@ namespace NoScope
                 Player player = other.GetComponent<Player>();
                 if (player != null)
                 {
-                    player.DecrementHealth();
+                    // Damage handled by Player's trigger to ensure exactly one life unit is removed per collision.
+                    // We keep this hook for future effects (knockback, sound), but avoid double-decrement.
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -246,6 +247,33 @@ namespace NoScope
         public void StopTime()
         {
             Time.timeScale = 0f;
+        }
+
+        // Exécute une action différée sur l'instance persistante du GameManager.
+        // Retourne le Coroutine pour permettre l'annulation.
+        public Coroutine RunDelayed(float seconds, Action action)
+        {
+            if (action == null) return null;
+            return StartCoroutine(RunDelayedCoroutine(seconds, action));
+        }
+
+        public void StopDelayed(Coroutine coroutine)
+        {
+            if (coroutine == null) return;
+            StopCoroutine(coroutine);
+        }
+
+        private IEnumerator RunDelayedCoroutine(float seconds, Action action)
+        {
+            yield return new WaitForSeconds(seconds);
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GameManager] Erreur dans RunDelayed action: {ex}");
+            }
         }
 
         public void ResumeTime()

@@ -106,7 +106,7 @@ namespace NoScope
                     }
                     if (Keyboard.current.jKey.wasPressedThisFrame)
                     {
-                        SwitchToWeapon<SprayWeapon>();
+                        SwitchToWeapon<Shotgun>();
                     }
                 }
             }
@@ -228,7 +228,8 @@ namespace NoScope
         public void SwitchToWeapon<T>() where T : Weapon
         {
             T weapon = GetComponentInChildren<T>(true); // true = inclut les objets désactivés
-                      if (weapon != null && weapon != currentWeapon)    {
+            if (weapon != null && weapon != currentWeapon)
+            {
                 EquipWeapon(weapon);
             }
             else
@@ -315,9 +316,16 @@ namespace NoScope
             if (other.CompareTag("Bullet"))
                 return;
 
-            if (other.CompareTag("Enemy"))
+            // Si c'est la masse ennemie, mort instantanée
+            if (other.CompareTag("EnemyMass"))
             {
                 Die();
+                return;
+            }
+
+            if (other.CompareTag("Enemy"))
+            {
+                DecrementHealth();
             }
             else if (other.CompareTag("TriggerJump"))
             {
@@ -381,14 +389,18 @@ namespace NoScope
         }
         public void DecrementHealth()
         {
-            if (Life > 0)
-            {
-                Life--;
-            }
-            else
+            Life = Mathf.Max(Life - 1, 0);
+            Debug.Log($"[Player] Life decremented, remaining: {Life}");
+            if (Life <= 0)
             {
                 Die();
             }
+        }
+
+        // Kill the player immediately
+        public void Kill()
+        {
+            Die();
         }
     }
 }
