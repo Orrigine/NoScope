@@ -67,6 +67,13 @@ namespace NoScope
                             bulletRb.linearVelocity = direction * bulletSpeed;
                         }
 
+                        // Si la prefab a un composant Bullet, définir les dégâts spécifiques du shotgun
+                        var bulletComp = bullet.GetComponent<NoScope.Bullet>();
+                        if (bulletComp != null)
+                        {
+                            bulletComp.SetDamage(50f);
+                        }
+
                         Destroy(bullet, bulletLifetime);
                     }
                 }
