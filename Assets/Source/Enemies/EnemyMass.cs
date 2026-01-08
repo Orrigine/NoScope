@@ -9,8 +9,8 @@ namespace NoScope
         [Header("Mass Enemy Settings")]
         [SerializeField] private GameObject smallEnemyPrefab;
         [SerializeField] private float spawnInterval = 5f;
-        [SerializeField] private int maxSmallEnemies = 5;
-        [SerializeField] private float spawnRadius = 5f;
+        [SerializeField] private int maxSmallEnemies = 6;
+        [SerializeField] private Transform zombieSpawnArea; // Zone de spawn des zombies
 
         [Header("Speed Boost Settings")]
         [SerializeField] private float speedIncreasePerFailedQTE = 1f; // Augmentation de vitesse par QTE ratéex
@@ -96,7 +96,7 @@ namespace NoScope
             {
                 // Applique directement la vitesse de rattrapage
                 moveSpeed = _baseSpeed * catchUpSpeedMultiplier;
-                Debug.Log($"Catching up! Applied speed: {moveSpeed}");
+
             }
         }
 
@@ -113,8 +113,38 @@ namespace NoScope
         {
             if (smallEnemyPrefab == null) return;
 
-            Vector3 spawnPosition = transform.position + Random.insideUnitSphere * spawnRadius;
-            spawnPosition.y = transform.position.y;
+            Vector3 spawnPosition;
+
+            // Si ZombieSpawnArea est assignée, spawn dans sa zone
+            if (zombieSpawnArea != null)
+            {
+                // Récupère le BoxCollider ou SphereCollider de la zone de spawn
+                Collider spawnCollider = zombieSpawnArea.GetComponent<Collider>();
+
+                if (spawnCollider != null)
+                {
+                    // Génère une position aléatoire dans les bounds du collider
+                    Bounds bounds = spawnCollider.bounds;
+                    spawnPosition = new Vector3(
+                        Random.Range(bounds.min.x, bounds.max.x),
+                        zombieSpawnArea.position.y, // Garde la hauteur de la zone
+                        Random.Range(bounds.min.z, bounds.max.z)
+                    );
+                }
+                else
+                {
+                    // Fallback: spawn directement à la position de la zone
+                    spawnPosition = zombieSpawnArea.position;
+                    Debug.LogWarning("[EnemyMass] ZombieSpawnArea n'a pas de Collider, spawn à sa position exacte");
+                }
+            }
+            else
+            {
+                // Fallback: spawn autour de l'EnemyMass (ancien comportement)
+                spawnPosition = transform.position + Random.insideUnitSphere * 5f;
+                spawnPosition.y = transform.position.y;
+                Debug.LogWarning("[EnemyMass] ZombieSpawnArea non assignée, spawn autour de l'EnemyMass");
+            }
 
             GameObject smallEnemy = Instantiate(smallEnemyPrefab, spawnPosition, Quaternion.identity);
             _activeSmallEnemies.Add(smallEnemy);
@@ -144,13 +174,11 @@ namespace NoScope
         public override void TakeDamage(float damage)
         {
             base.TakeDamage(damage);
-            Debug.Log($"Mass Enemy HP: {GetCurrentHealth()}/{GetMaxHealth()}");
         }
 
         public void IncreaseSpeed()
         {
             moveSpeed += speedIncreasePerFailedQTE;
-            Debug.Log($"Mass Enemy speed increased to: {moveSpeed}");
         }
     }
 }

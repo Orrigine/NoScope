@@ -16,21 +16,14 @@ namespace NoScope
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"[TriggerJump] OnTriggerEnter détecté avec {other.gameObject.name} (tag: '{other.tag}')");
-
             if (other.CompareTag("Player"))
             {
-                Debug.Log("[TriggerJump] Tag Player confirmé!");
-
                 Player player = other.GetComponent<Player>();
                 if (player != null && targetLandingPoint != null)
                 {
-                    Debug.Log("[TriggerJump] Player component et targetLandingPoint OK - Lancement QTE");
-
                     // Déclenche la QTE D'ABORD pour générer _currentTimeLimit
                     if (QTEManager.Instance != null)
                     {
-                        Debug.Log("[TriggerJump] Appel de QTEManager.StartQTE()");
                         QTEManager.Instance.StartQTE();
                     }
                     else
@@ -52,7 +45,7 @@ namespace NoScope
                     Vector3 endPos = targetLandingPoint.position;
 
                     // Crée une vraie parabole avec plusieurs points intermédiaires
-                    int numPoints = 10; // Nombre de points pour la courbe
+                    int numPoints = 20; // Nombre de points pour la courbe (augmenté pour plus de précision)
                     Vector3[] path = new Vector3[numPoints];
 
                     float distance = Vector3.Distance(new Vector3(startPos.x, 0, startPos.z), new Vector3(endPos.x, 0, endPos.z));
@@ -75,7 +68,7 @@ namespace NoScope
                     // Lance le joueur avec DOTween
                     player.LaunchWithDOTween(path, jumpDuration);
 
-                    Debug.Log($"Player launched with DOTween! Duration: {jumpDuration}s, Arc: {arcHeight}m, Distance: {distance:F2}m, Points: {numPoints}");
+
                 }
                 else
                 {
@@ -85,7 +78,7 @@ namespace NoScope
             }
             else
             {
-                Debug.Log($"TriggerJump: Object has wrong tag. Expected 'Player', got '{other.tag}'");
+
             }
         }
 

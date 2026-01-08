@@ -15,7 +15,6 @@ namespace NoScope.States
 
         public void Enter()
         {
-            Debug.Log("Entering Play State");
             Time.timeScale = 1f;
         }
 
@@ -28,7 +27,6 @@ namespace NoScope.States
 
         public void Exit()
         {
-            Debug.Log("Exiting Play State");
         }
     }
 }
