@@ -21,7 +21,7 @@ namespace NoScope
         public float maxFireRate = 0.1f;
         public float fireRateIncreasePerQTE = 0.05f;
         public float bulletSpeed = 20f;
-        public float bulletLifetime = 5f;
+        public float bulletLifetime = 2.5f;
         public float bulletDamage = 10f;
 
         [Header("Pipe Generation")]

@@ -19,6 +19,8 @@ namespace NoScope
             baseBulletsPerSecond = 3f;
             maxBulletsPerSecond = 15f;
             _currentBulletsPerSecond = baseBulletsPerSecond;
+            // Shotgun deals high damage per pellet
+            bulletDamage = 50f;
         }
 
         public override void Fire()
@@ -65,6 +67,13 @@ namespace NoScope
                             // Direction basée sur la rotation calculée (vers l'arrière avec l'offset)
                             Vector3 direction = rotation * Vector3.back;
                             bulletRb.linearVelocity = direction * bulletSpeed;
+                        }
+
+                        // Set projectile damage if supported
+                        var bulletComp = bullet.GetComponent<NoScope.Bullet>();
+                        if (bulletComp != null)
+                        {
+                            bulletComp.SetDamage(bulletDamage);
                         }
 
                         Destroy(bullet, bulletLifetime);

@@ -60,6 +60,13 @@ namespace NoScope
                 bulletRb.linearVelocity = -bullet.transform.forward * bulletSpeed;
             }
 
+            // Set projectile damage if supported
+            var bulletComp = bullet.GetComponent<NoScope.Bullet>();
+            if (bulletComp != null)
+            {
+                bulletComp.SetDamage(bulletDamage);
+            }
+
             Destroy(bullet, bulletLifetime);
         }
     }

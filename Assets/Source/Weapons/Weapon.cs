@@ -14,12 +14,14 @@ namespace NoScope
         [SerializeField] protected float minBulletsPerSecond = 1f; // Cadence minimale
         [SerializeField] protected float fireRateIncreasePerQTE = 0.5f; // Augmentation par QTE
         [SerializeField] protected float fireRateDecayRate = 0.1f; // Réduction par seconde
-        
+
         [Header("Projectile Settings")]
         [SerializeField] protected GameObject bulletPrefab;
         [SerializeField] protected Transform[] gunPoints;
         [SerializeField] protected float bulletSpeed = 20f;
-        [SerializeField] protected float bulletLifetime = 5f;
+        [SerializeField] protected float bulletLifetime = 2.5f;
+        [Header("Projectile Damage")]
+        [SerializeField] protected float bulletDamage = 10f;
 
         // État actuel de l'arme
         protected float _currentBulletsPerSecond;
