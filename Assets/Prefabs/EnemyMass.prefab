@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -19.69932, y: 0.50001, z: 57.68439}
-  m_LocalScale: {x: 30, y: 10, z: 10}
+  m_LocalScale: {x: 25, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1687125393847242724}
@@ -133,18 +133,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NoScope.EnemyMass
   maxHealth: 100000
   currentHealth: 0
-  moveSpeed: 5
+  moveSpeed: 30
   damageToPlayer: 50
   damageEffectPrefab: {fileID: 0}
   healthBarTransform: {fileID: 0}
   smallEnemyPrefab: {fileID: 3449420838888424336, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
-  spawnInterval: 2
-  maxSmallEnemies: 5
+  spawnInterval: 4
+  maxSmallEnemies: 10
   zombieSpawnArea: {fileID: 1687125393847242724}
-  speedIncreasePerFailedQTE: 1
-  speedDecayRate: 0.05
-  maxDistanceBeforeCatchUp: 30
-  catchUpSpeedMultiplier: 1.5
+  speedIncreasePerFailedQTE: 2
+  speedDecayRate: 0.6
+  maxDistanceBeforeCatchUp: 250
+  catchUpSpeedMultiplier: 4
 --- !u!1 &6424992728108251968
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,8 +171,8 @@ Transform:
   m_GameObject: {fileID: 6424992728108251968}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.7677001, y: 0.1, z: 0.1}
+  m_LocalPosition: {x: 0, y: -0.443, z: 0}
+  m_LocalScale: {x: 2.6407127, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2160828925388399894}
