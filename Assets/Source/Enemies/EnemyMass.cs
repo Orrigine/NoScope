@@ -9,7 +9,7 @@ namespace NoScope
         [Header("Mass Enemy Settings")]
         [SerializeField] private GameObject smallEnemyPrefab;
         [SerializeField] private float spawnInterval = 5f;
-        [SerializeField] private int maxSmallEnemies = 5;
+        [SerializeField] private int maxSmallEnemies = 6;
         [SerializeField] private Transform zombieSpawnArea; // Zone de spawn des zombies
 
         [Header("Speed Boost Settings")]
