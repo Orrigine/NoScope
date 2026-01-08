@@ -29,6 +29,12 @@ namespace NoScope
         [SerializeField] private TextMeshProUGUI _multiplierText;
         [SerializeField] private TextMeshProUGUI _multiplierScoreText; // Le chiffre du multiplicateur
 
+        [Header("UI Elements - Distance")]
+        [SerializeField] private Slider _distanceSlider;
+        [SerializeField] private Image _distanceFillImage; // L'image Fill du slider pour le gradient
+        [SerializeField] private Image _skullImage; // L'image du crâne qui change de couleur
+        [SerializeField] private float _maxDistance = 50f; // Distance max pour le slider (vert = loin, rouge = proche)
+
         private bool _hasCompletedFirstQTE = false; // Track si au moins une QTE a été faite
 
         private void Awake()
@@ -104,6 +110,45 @@ namespace NoScope
                 {
                     // _enemyHealthText.text = $"Enemy HP: {enemy.GetHealthPercentage() * 100f:F0}%";
                 }
+            }
+
+            // Met à jour le slider de distance joueur-ennemi
+            UpdateDistanceSlider();
+        }
+
+        /// <summary>
+        /// Met à jour le slider de distance avec gradient vert (loin) → rouge (proche)
+        /// </summary>
+        private void UpdateDistanceSlider()
+        {
+            if (_distanceSlider == null) return;
+
+            Player player = GameManager.Instance?.GetPlayer();
+            EnemyMass enemy = GameManager.Instance?.GetEnemyMass();
+
+            if (player == null || enemy == null) return;
+
+            // Calcul de la distance
+            float distance = Vector3.Distance(player.transform.position, enemy.transform.position);
+
+            // Normalise la distance (0 = proche/rouge, 1 = loin/vert)
+            float normalizedDistance = Mathf.Clamp01(distance / _maxDistance);
+
+            // Met à jour la valeur du slider (inversé: proche = slider plein)
+            _distanceSlider.value = 1f - normalizedDistance;
+
+            // Met à jour la couleur avec gradient vert → rouge
+            Color dangerColor = Color.Lerp(Color.red, Color.green, normalizedDistance);
+
+            if (_distanceFillImage != null)
+            {
+                _distanceFillImage.color = dangerColor;
+            }
+
+            // Applique aussi la couleur au Skull
+            if (_skullImage != null)
+            {
+                _skullImage.color = dangerColor;
             }
         }
 
