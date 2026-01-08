@@ -7,6 +7,11 @@ namespace NoScope
         [SerializeField] private float damage = 10f;
         [SerializeField] private GameObject hitEffectPrefab;
 
+        public void SetDamage(float d)
+        {
+            damage = d;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Enemy"))
