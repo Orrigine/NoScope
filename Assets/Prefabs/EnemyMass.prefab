@@ -138,8 +138,8 @@ MonoBehaviour:
   damageEffectPrefab: {fileID: 0}
   healthBarTransform: {fileID: 0}
   smallEnemyPrefab: {fileID: 3449420838888424336, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
-  spawnInterval: 2
-  maxSmallEnemies: 5
+  spawnInterval: 1
+  maxSmallEnemies: 15
   zombieSpawnArea: {fileID: 1687125393847242724}
   speedIncreasePerFailedQTE: 1
   speedDecayRate: 0.05
