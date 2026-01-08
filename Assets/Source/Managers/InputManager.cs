@@ -10,9 +10,7 @@ namespace NoScope
     {
         public static InputManager Instance { get; private set; }
 
-        // Events pour les inputs
-        public event System.Action OnPausePressed;
-        public event System.Action OnRestartPressed;
+        // Events pour les inputs (supprimés s'ils ne sont pas utilisés)
 
         private void Awake()
         {
@@ -38,14 +36,17 @@ namespace NoScope
 
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                OnPausePressed?.Invoke();
                 HandlePause();
             }
 
             // Restart (R key)
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
-                OnRestartPressed?.Invoke();
+                // Appelle directement l'action de restart via GameManager si présent
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.RestartGame();
+                }
             }
         }
 
@@ -65,9 +66,6 @@ namespace NoScope
         }
 
         // Méthodes utilitaires pour vérifier les inputs (QTE)
-        public bool GetUpArrow() => Keyboard.current != null && Keyboard.current.upArrowKey.wasPressedThisFrame;
-        public bool GetDownArrow() => Keyboard.current != null && Keyboard.current.downArrowKey.wasPressedThisFrame;
-        public bool GetLeftArrow() => Keyboard.current != null && Keyboard.current.leftArrowKey.wasPressedThisFrame;
-        public bool GetRightArrow() => Keyboard.current != null && Keyboard.current.rightArrowKey.wasPressedThisFrame;
+        // Ces helpers étaient inutilisés dans le projet et ont été retirés.
     }
 }

@@ -96,7 +96,7 @@ namespace NoScope
             {
                 // Applique directement la vitesse de rattrapage
                 moveSpeed = _baseSpeed * catchUpSpeedMultiplier;
-                Debug.Log($"Catching up! Applied speed: {moveSpeed}");
+
             }
         }
 

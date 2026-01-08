@@ -100,7 +100,6 @@ namespace NoScope
             // Change vers StateStyle (arrêt du temps)
             if (StateMachine.Instance != null)
             {
-                Debug.Log("Changing to StateStyle...");
                 StateMachine.Instance.ChangeState(StateStyle.Instance);
             }
 
@@ -111,7 +110,6 @@ namespace NoScope
             if (qteUIPanel != null)
             {
                 qteUIPanel.SetActive(true);
-                Debug.Log("QTE UI Panel activated");
             }
 
 
@@ -270,7 +268,7 @@ namespace NoScope
                 _currentScoreMultiplier += multiplierIncrease;
                 _currentRankLevel++;
 
-                Debug.Log($"Style Rank UP! {styleRanks[_currentRankLevel]} - Multiplicateur: {_currentScoreMultiplier:F2}x");
+
             }
 
             // Met à jour le multiplicateur dans GameManager
@@ -310,7 +308,7 @@ namespace NoScope
             _currentScoreMultiplier = baseMultiplier;
             _currentRankLevel = 0;
 
-            Debug.Log($"QTE ratée! Style Rank réinitialisé à {styleRanks[0]} - Multiplicateur: {_currentScoreMultiplier}x");
+
 
             // Met à jour le multiplicateur dans GameManager
             if (GameManager.Instance != null)
@@ -399,7 +397,7 @@ namespace NoScope
                 Player player = GameManager.Instance.GetPlayer();
                 player.ResetVelocityToForward();
 
-                Debug.Log("Player velocity reset after QTE");
+
             }
         }
 
@@ -439,7 +437,7 @@ namespace NoScope
                 qteUIPanel.SetActive(false);
 
             StopAllCoroutines();
-            Debug.Log("QTEManager state reset");
+
         }
     }
 }

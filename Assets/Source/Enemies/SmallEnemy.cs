@@ -15,7 +15,6 @@ namespace NoScope
 
         private Vector3 _spawnDirection; // Direction initiale du spawn
         private bool _isConverging = false; // Si le zombie converge vers le joueur
-        private bool _hasSpeedBoost = false; // Si ce zombie a un boost de vitesse
 
         protected override void Start()
         {
@@ -30,7 +29,6 @@ namespace NoScope
             // Chance aléatoire d'avoir un boost de vitesse
             if (Random.value < speedBoostChance)
             {
-                _hasSpeedBoost = true;
                 moveSpeed *= speedBoostMultiplier;
             }
         }
@@ -113,7 +111,8 @@ namespace NoScope
                 Player player = other.GetComponent<Player>();
                 if (player != null)
                 {
-                    player.DecrementHealth();
+                    // Damage handled by Player's trigger to ensure exactly one life unit is removed per collision.
+                    // We keep this hook for future effects (knockback, sound), but avoid double-decrement.
                 }
             }
         }

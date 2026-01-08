@@ -16,21 +16,14 @@ namespace NoScope
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"[TriggerJump] OnTriggerEnter détecté avec {other.gameObject.name} (tag: '{other.tag}')");
-
             if (other.CompareTag("Player"))
             {
-                Debug.Log("[TriggerJump] Tag Player confirmé!");
-
                 Player player = other.GetComponent<Player>();
                 if (player != null && targetLandingPoint != null)
                 {
-                    Debug.Log("[TriggerJump] Player component et targetLandingPoint OK - Lancement QTE");
-
                     // Déclenche la QTE D'ABORD pour générer _currentTimeLimit
                     if (QTEManager.Instance != null)
                     {
-                        Debug.Log("[TriggerJump] Appel de QTEManager.StartQTE()");
                         QTEManager.Instance.StartQTE();
                     }
                     else
@@ -75,7 +68,7 @@ namespace NoScope
                     // Lance le joueur avec DOTween
                     player.LaunchWithDOTween(path, jumpDuration);
 
-                    Debug.Log($"Player launched with DOTween! Duration: {jumpDuration}s, Arc: {arcHeight}m, Distance: {distance:F2}m, Points: {numPoints}");
+
                 }
                 else
                 {
@@ -85,7 +78,7 @@ namespace NoScope
             }
             else
             {
-                Debug.Log($"TriggerJump: Object has wrong tag. Expected 'Player', got '{other.tag}'");
+
             }
         }
 

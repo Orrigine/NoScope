@@ -154,10 +154,5 @@ namespace NoScope
             return _activePipes.Count > 0 ? _activePipes.First.Value : null;
         }
 
-        public Pipes GetNextPipe()
-        {
-            var node = _activePipes.First?.Next;
-            return node?.Value;
-        }
     }
 }
