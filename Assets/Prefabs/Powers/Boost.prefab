@@ -128,3 +128,4 @@ MonoBehaviour:
   bobbingSpeed: 1
   bobbingAmount: 0.3
   pickupSound: {fileID: 0}
+  duration: 10

@@ -235,55 +235,7 @@ namespace NoScope
         }
 
         // Méthodes appelées par les boutons UI
-        public void OnCreditsButtonClicked()
-        {
-            HideAllPanels();
-            creditsPanel.SetActive(true);
-        }
-
-        public void OnSettingsButtonClicked()
-        {
-            ShowSettings();
-        }
-
-        public void OnStartButtonClicked()
-        {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.StartGame();
-            }
-        }
-
-        public void OnPauseButtonClicked()
-        {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.PauseGame();
-            }
-        }
-
-        public void OnResumeButtonClicked()
-        {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.ResumeGame();
-            }
-        }
-
-        public void OnRestartButtonClicked()
-        {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.RestartGame();
-            }
-        }
-
-        public void OnQuitButtonClicked()
-        {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.QuitGame();
-            }
-        }
+        // Méthodes UI pour boutons supprimées car non référencées dans le code.
+        // Si des boutons UI dans les scènes utilisaient ces callbacks, rajoutez-les manuellement.
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -130,7 +131,7 @@ namespace NoScope
             // Si pas trouvé, spawn un nouveau
             if (_currentPlayer == null && playerPrefab != null)
             {
-                Debug.Log("[GameManager] Aucun Player trouvé, spawn d'un nouveau");
+
                 GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
                 _currentPlayer = playerObj.GetComponent<Player>();
             }
@@ -150,7 +151,7 @@ namespace NoScope
             // Si pas trouvé, spawn une nouvelle
             if (_currentEnemyMass == null && enemyMassPrefab != null)
             {
-                Debug.Log("[GameManager] Aucune EnemyMass trouvée, spawn d'une nouvelle");
+
                 Vector3 spawnPos = Vector3.back * 30f;
                 GameObject enemyObj = Instantiate(enemyMassPrefab, spawnPos, Quaternion.identity);
                 _currentEnemyMass = enemyObj.GetComponent<EnemyMass>();
@@ -162,7 +163,7 @@ namespace NoScope
                 StateMachine.Instance.ChangeState(StatePlay.Instance);
             }
 
-            Debug.Log($"[GameManager] Invocation de OnGameStart - Abonnés: {OnGameStart?.GetInvocationList()?.Length ?? 0}");
+
             OnGameStart?.Invoke();
         }
 
@@ -179,7 +180,7 @@ namespace NoScope
                 StateMachine.Instance.ChangeState(StatePaused.Instance);
             }
             OnGamePause?.Invoke();
-            Debug.Log("Game Paused!");
+
         }
 
         public void ResumeGame()
@@ -195,7 +196,7 @@ namespace NoScope
                 StateMachine.Instance.ChangeState(StatePlay.Instance);
             }
             OnGameResume?.Invoke();
-            Debug.Log("Game Resumed!");
+
         }
 
         public void LoseGame()
@@ -206,7 +207,7 @@ namespace NoScope
             isGameStarted = false;
 
             OnGameLose?.Invoke();
-            Debug.Log("Game Over - You Lost!");
+
 
             // Optionnel: Arrêter le temps
             // Time.timeScale = 0f;
@@ -220,7 +221,7 @@ namespace NoScope
             isGameStarted = false;
 
             OnGameWin?.Invoke();
-            Debug.Log("You Win!");
+
         }
 
         public void RestartGame()
@@ -234,7 +235,7 @@ namespace NoScope
 
         public void QuitGame()
         {
-            Debug.Log("Quitting Game...");
+
 
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
@@ -246,6 +247,33 @@ namespace NoScope
         public void StopTime()
         {
             Time.timeScale = 0f;
+        }
+
+        // Exécute une action différée sur l'instance persistante du GameManager.
+        // Retourne le Coroutine pour permettre l'annulation.
+        public Coroutine RunDelayed(float seconds, Action action)
+        {
+            if (action == null) return null;
+            return StartCoroutine(RunDelayedCoroutine(seconds, action));
+        }
+
+        public void StopDelayed(Coroutine coroutine)
+        {
+            if (coroutine == null) return;
+            StopCoroutine(coroutine);
+        }
+
+        private IEnumerator RunDelayedCoroutine(float seconds, Action action)
+        {
+            yield return new WaitForSeconds(seconds);
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GameManager] Erreur dans RunDelayed action: {ex}");
+            }
         }
 
         public void ResumeTime()
@@ -270,7 +298,7 @@ namespace NoScope
         public void AddScore(int points)
         {
             _score += points;
-            Debug.Log($"[GameManager] AddScore appelé - Points ajoutés: {points}, Score total: {_score}, Abonnés OnScoreChanged: {OnScoreChanged?.GetInvocationList()?.Length ?? 0}");
+
             OnScoreChanged?.Invoke(_score);
         }
 
@@ -284,7 +312,7 @@ namespace NoScope
 
             AddScore(finalScore);
 
-            Debug.Log($"Enemy tué! Score de base: {baseScore}, Multiplicateur: {_currentScoreMultiplier}x, Score final: {finalScore}");
+
         }
         public void SetScoreMultiplier(float multiplier)
         {

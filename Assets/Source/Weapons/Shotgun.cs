@@ -5,7 +5,7 @@ namespace NoScope
     /// <summary>
     /// Arme spray - tire en éventail vers l'arrière avec un angle de dispersion
     /// </summary>
-    public class SprayWeapon : Weapon
+    public class Shotgun : Weapon
     {
         [Header("Spray Settings")]
         [SerializeField] private int bulletsPerShot = 5; // Nombre de projectiles par tir

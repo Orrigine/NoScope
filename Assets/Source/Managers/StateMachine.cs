@@ -54,17 +54,5 @@ namespace NoScope
             return _currentState;
         }
 
-        public IState GetState<T>() where T : IState
-        {
-            // Retourne l'instance singleton du state demandé
-            return typeof(T).Name switch
-            {
-                nameof(StatePlay) => StatePlay.Instance,
-                nameof(StatePaused) => StatePaused.Instance,
-                nameof(StateStyle) => StateStyle.Instance,
-                _ => null
-            };
-
-        }
     }
 }
