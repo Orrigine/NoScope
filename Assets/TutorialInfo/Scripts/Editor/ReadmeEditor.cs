@@ -10,7 +10,7 @@ using System.Reflection;
 [InitializeOnLoad]
 public class ReadmeEditor : Editor
 {
-    static string s_ShowedReadmeSessionStateName = "ReadmeEditor.showedReadme";
+    static string s_ShowedReadmeSessionStateName = "ReadmeEditor.showedReadme"
     
     static string s_ReadmeSourceDirectory = "Assets/TutorialInfo";
 
