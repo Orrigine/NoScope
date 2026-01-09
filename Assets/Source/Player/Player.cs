@@ -11,6 +11,12 @@ namespace NoScope
 
         [Header("Values")]
         [SerializeField] public int Life = 3;
+        [Header("Damage")]
+        [Tooltip("Seconds of invulnerability after taking damage to avoid multiple rapid hits")]
+        [SerializeField] private float damageCooldown = 1.0f;
+
+        // Timestamp of last received damage
+        private float _lastDamageTime = -10f;
 
         [Header("Movement Settings")]
         [SerializeField] private float baseSpeed = 10f;
@@ -41,6 +47,8 @@ namespace NoScope
 
         // Events
         public event Action OnPlayerDie;
+        // Notifie le nombre de vies actuel (0..3)
+        public event Action<int> OnLifeChanged;
 
         // Private variables
         private float _currentSpeed;
@@ -62,6 +70,9 @@ namespace NoScope
 
 
             _currentSpeed = baseSpeed;
+
+            // Envoie l'état initial des vies au démarrage
+            OnLifeChanged?.Invoke(Life);
 
             // S'abonne aux événements QTE
             if (QTEManager.Instance != null)
@@ -347,6 +358,10 @@ namespace NoScope
 
         private void Die()
         {
+            // S'assure que les vies sont à 0 et notifie
+            Life = 0;
+            OnLifeChanged?.Invoke(Life);
+
             OnPlayerDie?.Invoke();
 
             if (GameManager.Instance != null)
@@ -384,7 +399,18 @@ namespace NoScope
         }
         public void DecrementHealth()
         {
+            // Respecte un cooldown pour éviter les hits répétés
+            if (Time.time - _lastDamageTime < damageCooldown)
+            {
+                return;
+            }
+
+            _lastDamageTime = Time.time;
+
             Life = Mathf.Max(Life - 1, 0);
+
+            // Notifie le changement de vies
+            OnLifeChanged?.Invoke(Life);
 
             if (Life <= 0)
             {

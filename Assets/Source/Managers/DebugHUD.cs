@@ -74,6 +74,7 @@ namespace NoScope
             {
                 Player player = GameManager.Instance.GetPlayer();
                 sb.AppendLine($"<b>Player Speed:</b> {player.GetCurrentSpeed():F2}");
+                sb.AppendLine($"<b>Player Lives:</b> {player.Life}");
                 sb.AppendLine($"<b>Is Jumping:</b> {player.IsJumping()}");
                 sb.AppendLine();
             }

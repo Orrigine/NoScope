@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,16 @@ namespace NoScope
         [SerializeField] private TextMeshProUGUI _enemyHealthText;
         [SerializeField] private TextMeshProUGUI _multiplierText;
         [SerializeField] private TextMeshProUGUI _multiplierScoreText; // Le chiffre du multiplicateur
+
+        [Header("Lives UI")]
+        [SerializeField] private Sprite skateSprite;
+        [SerializeField] private int maxLives = 3;
+        [SerializeField] private Vector2 lifeIconSize = new Vector2(48, 48);
+
+        // Assign a RectTransform in the Inspector (e.g. a child of `gameplayPanel`).
+        [SerializeField] private RectTransform livesContainer;
+
+        private List<Image> _lifeIcons = new List<Image>();
 
         private bool _hasCompletedFirstQTE = false; // Track si au moins une QTE a été faite
 
@@ -197,6 +208,16 @@ namespace NoScope
             HideAllPanels();
             if (gameplayPanel != null)
                 gameplayPanel.SetActive(true);
+
+            // Setup minimal lives UI and subscribe to player life changes
+            SetupLivesUI();
+            Player p = FindFirstObjectByType<Player>();
+            if (p != null)
+            {
+                p.OnLifeChanged -= UpdateLives;
+                p.OnLifeChanged += UpdateLives;
+                UpdateLives(p.Life);
+            }
         }
 
         private void OnGamePause()
@@ -215,6 +236,113 @@ namespace NoScope
         {
             if (gameOverPanel != null)
                 gameOverPanel.SetActive(true);
+
+            // Unsubscribe and dim lives
+            Player p = FindFirstObjectByType<Player>();
+            if (p != null)
+            {
+                p.OnLifeChanged -= UpdateLives;
+            }
+            UpdateLives(0);
+        }
+
+        // Minimal lives UI helpers (non-intrusive)
+        private void SetupLivesUI()
+        {
+            // Try to find a container if none assigned
+            if (livesContainer == null)
+            {
+                // first try: child named LivesContainer under gameplayPanel
+                if (gameplayPanel != null)
+                {
+                    Transform t = gameplayPanel.transform.Find("LivesContainer");
+                    if (t != null) livesContainer = t as RectTransform;
+                }
+
+                // second try: global find
+                if (livesContainer == null)
+                {
+                    GameObject found = GameObject.Find("LivesContainer");
+                    if (found != null) livesContainer = found.GetComponent<RectTransform>();
+                }
+            }
+
+            // If still no container, optionally create one if we have a sprite and a gameplayPanel
+            if (livesContainer == null)
+            {
+                if (skateSprite == null || gameplayPanel == null)
+                {
+                    Debug.LogWarning("[UIManager] livesContainer not assigned and cannot create one automatically. Assign 'livesContainer' in Inspector or add a child named 'LivesContainer' under gameplayPanel.");
+                    return;
+                }
+
+                GameObject containerGO = new GameObject("LivesContainer");
+                containerGO.transform.SetParent(gameplayPanel.transform, false);
+                livesContainer = containerGO.AddComponent<RectTransform>();
+                var hg = containerGO.AddComponent<HorizontalLayoutGroup>();
+                hg.spacing = 6f;
+            }
+
+            // If icons already exist as children, reuse them (designer-created)
+            _lifeIcons.Clear();
+            for (int i = 0; i < livesContainer.childCount && _lifeIcons.Count < maxLives; i++)
+            {
+                var child = livesContainer.GetChild(i);
+                var img = child.GetComponent<Image>();
+                if (img != null)
+                {
+                    _lifeIcons.Add(img);
+                }
+            }
+
+            // If no existing child Images, create them (requires skateSprite)
+            if (_lifeIcons.Count == 0)
+            {
+                if (skateSprite == null)
+                {
+                    Debug.LogWarning("[UIManager] No child Images found in livesContainer and 'skateSprite' is not assigned. No life icons will be displayed.");
+                    return; // nothing to create
+                }
+
+                for (int i = 0; i < maxLives; i++)
+                {
+                    GameObject go = new GameObject($"LifeIcon_{i}");
+                    go.transform.SetParent(livesContainer, false);
+                    Image img = go.AddComponent<Image>();
+                    img.sprite = skateSprite;
+                    img.rectTransform.sizeDelta = lifeIconSize;
+                    img.preserveAspect = true;
+                    _lifeIcons.Add(img);
+                }
+            }
+
+            // Ensure icon count matches maxLives by creating placeholders if needed
+            while (_lifeIcons.Count < maxLives)
+            {
+                if (skateSprite == null) break;
+                GameObject go = new GameObject($"LifeIcon_auto_{_lifeIcons.Count}");
+                go.transform.SetParent(livesContainer, false);
+                Image img = go.AddComponent<Image>();
+                img.sprite = skateSprite;
+                img.rectTransform.sizeDelta = lifeIconSize;
+                img.preserveAspect = true;
+                _lifeIcons.Add(img);
+            }
+        }
+
+        public void UpdateLives(int life)
+        {
+            for (int i = 0; i < _lifeIcons.Count; i++)
+            {
+                bool on = i < life;
+                if (_lifeIcons[i] != null)
+                {
+                    _lifeIcons[i].enabled = on;
+                    Color c = _lifeIcons[i].color;
+                    c.a = on ? 1f : 0.25f;
+                    _lifeIcons[i].color = c;
+                }
+            }
         }
 
         private void OnGameWin()
