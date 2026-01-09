@@ -160,3 +160,4 @@ MonoBehaviour:
   convergenceDistance: 20
   speedBoostChance: 0.05
   speedBoostMultiplier: 1.15
+  speedIncreasePerFailedQTE: 5

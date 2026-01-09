@@ -206,11 +206,13 @@ namespace NoScope
             isGameOver = true;
             isGameStarted = false;
 
+            // Marque le jeu comme terminé et en pause
+            isGamePaused = true;
+
             OnGameLose?.Invoke();
 
-
-            // Optionnel: Arrêter le temps
-            // Time.timeScale = 0f;
+            // Arrête complètement la simulation
+            Time.timeScale = 0f;
         }
 
         public void WinGame()

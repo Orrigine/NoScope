@@ -405,7 +405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
@@ -471,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
@@ -741,7 +741,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
@@ -807,7 +807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
@@ -1625,7 +1625,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
@@ -1943,7 +1943,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5066457575368790411, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
       propertyPath: moveSpeed
-      value: 25
+      value: 27.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7119201527549557019, guid: 6302bac7663423446a268b6f29099eeb, type: 3}
