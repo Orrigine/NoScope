@@ -13,7 +13,7 @@ namespace NoScope
         [SerializeField] private Transform zombieSpawnArea; // Zone de spawn des zombies
 
         [Header("Speed Boost Settings")]
-        [SerializeField] private float speedIncreasePerFailedQTE = 1f; // Augmentation de vitesse par QTE ratéex
+        [SerializeField] private float speedIncreasePerFailedQTE = 1f; // Augmentation de vitesse par QTE ratée
         [SerializeField] private float speedDecayRate = 0.05f; // Décroissance de vitesse par seconde 
 
         [Header("Catch-up Settings")]

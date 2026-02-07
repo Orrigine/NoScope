@@ -12,6 +12,7 @@ namespace NoScope
         [SerializeField] private float convergenceDistance = 15f; // Distance à laquelle le zombie commence à converger vers le joueur
         [SerializeField] private float speedBoostChance = 0.2f; // 20% de chance d'avoir un boost de vitesse
         [SerializeField] private float speedBoostMultiplier = 2.5f; // Multiplicateur de vitesse pour les zombies boostés
+        [SerializeField] private float speedIncreasePerFailedQTE = 2f; // Augmentation de la vitesse par QTE raté
 
         private Vector3 _spawnDirection; // Direction initiale du spawn
         private bool _isConverging = false; // Si le zombie converge vers le joueur
@@ -30,6 +31,29 @@ namespace NoScope
             if (Random.value < speedBoostChance)
             {
                 moveSpeed *= speedBoostMultiplier;
+            }
+
+            if (QTEManager.Instance != null)
+            {
+                QTEManager.Instance.OnQTEComplete += OnQTEComplete;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Se désabonne des événements
+            if (QTEManager.Instance != null)
+            {
+                QTEManager.Instance.OnQTEComplete -= OnQTEComplete;
+            }
+        }
+
+        private void OnQTEComplete(bool success)
+        {
+            // Augmente la vitesse seulement si la QTE est ratée
+            if (!success)
+            {
+                IncreaseSpeed();
             }
         }
 
@@ -130,6 +154,11 @@ namespace NoScope
             }
 
             base.Die();
+        }
+
+        public void IncreaseSpeed()
+        {
+            moveSpeed += speedIncreasePerFailedQTE;
         }
     }
 }
